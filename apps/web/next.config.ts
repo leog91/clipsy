@@ -18,7 +18,7 @@ for (const line of envContent.split("\n")) {
 const nextConfig: NextConfig = {
   transpilePackages: ["@clipsy/db", "@clipsy/shared"],
   serverExternalPackages: ["!@libsql/client", "!libsql", "!@libsql/linux-x64-gnu"],
-  env,
+
 };
 
 export default nextConfig;
