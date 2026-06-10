@@ -78,6 +78,19 @@ export const auth = betterAuth({
           protocol: "auto",
         }
       : authUrl || appUrl || "http://localhost:3000",
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "user",
+      },
+      deletedAt: {
+        type: "date",
+        required: false,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },

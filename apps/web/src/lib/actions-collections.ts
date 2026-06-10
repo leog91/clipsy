@@ -1,6 +1,6 @@
 "use server";
 
-import { getDb, eq, and, sql } from "@clipsy/db";
+import { getDb, eq, and, sql, isNull } from "@clipsy/db";
 import { collections, collectionItems } from "@clipsy/db/schema";
 import { auth } from "./auth";
 import { headers } from "next/headers";
@@ -40,7 +40,7 @@ export async function listCollections() {
   const result = await db
     .select()
     .from(collections)
-    .where(eq(collections.userId, session.user.id));
+    .where(and(eq(collections.userId, session.user.id), isNull(collections.deletedAt)));
 
   return result;
 }
@@ -99,7 +99,7 @@ export async function listCollectionsWithCounts() {
   const collectionsList = await db
     .select()
     .from(collections)
-    .where(eq(collections.userId, session.user.id));
+    .where(and(eq(collections.userId, session.user.id), isNull(collections.deletedAt)));
 
   const collectionsWithCounts = await Promise.all(
     collectionsList.map(async (collection) => {
@@ -132,7 +132,7 @@ export async function createAndAddCollectionToItem(itemId: string, collectionNam
   const [existingCollection] = await db
     .select()
     .from(collections)
-    .where(and(eq(collections.userId, session.user.id), eq(collections.name, collectionName)))
+    .where(and(eq(collections.userId, session.user.id), eq(collections.name, collectionName), isNull(collections.deletedAt)))
     .limit(1);
 
   let collectionId: string;

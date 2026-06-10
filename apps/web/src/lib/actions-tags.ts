@@ -1,6 +1,6 @@
 "use server";
 
-import { getDb, eq, and, sql } from "@clipsy/db";
+import { getDb, eq, and, sql, isNull } from "@clipsy/db";
 import { tags, itemTags } from "@clipsy/db/schema";
 import { auth } from "./auth";
 import { headers } from "next/headers";
@@ -40,7 +40,7 @@ export async function listTags() {
   const result = await db
     .select()
     .from(tags)
-    .where(eq(tags.userId, session.user.id));
+    .where(and(eq(tags.userId, session.user.id), isNull(tags.deletedAt)));
 
   return result;
 }
@@ -78,7 +78,7 @@ export async function listTagsWithCounts() {
   const tagsList = await db
     .select()
     .from(tags)
-    .where(eq(tags.userId, session.user.id));
+    .where(and(eq(tags.userId, session.user.id), isNull(tags.deletedAt)));
 
   const tagsWithCounts = await Promise.all(
     tagsList.map(async (tag) => {
@@ -111,7 +111,7 @@ export async function createAndAddTagToItem(itemId: string, tagName: string) {
   const [existingTag] = await db
     .select()
     .from(tags)
-    .where(and(eq(tags.userId, session.user.id), eq(tags.name, tagName)))
+    .where(and(eq(tags.userId, session.user.id), eq(tags.name, tagName), isNull(tags.deletedAt)))
     .limit(1);
 
   let tagId: string;

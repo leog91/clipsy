@@ -1,6 +1,6 @@
 "use server";
 
-import { getDb, eq, and, desc } from "@clipsy/db";
+import { getDb, eq, and, desc, isNull } from "@clipsy/db";
 import { items, tags, itemTags, collections, collectionItems } from "@clipsy/db/schema";
 import type { ItemWithRelations, UpdateItemInput } from "@clipsy/shared";
 import { fetchYouTubeMetadata } from "./youtube";
@@ -55,7 +55,7 @@ export async function listItems(status?: "to_watch" | "watching") {
 
   const db = getDb();
 
-  const conditions = [eq(items.userId, session.user.id)];
+  const conditions = [eq(items.userId, session.user.id), isNull(items.deletedAt)];
   if (status) {
     conditions.push(eq(items.status, status));
   }
@@ -106,7 +106,7 @@ export async function getItemById(id: string) {
   const [item] = await db
     .select()
     .from(items)
-    .where(and(eq(items.id, id), eq(items.userId, session.user.id)));
+    .where(and(eq(items.id, id), eq(items.userId, session.user.id), isNull(items.deletedAt)));
 
   if (!item) {
     return null;
@@ -163,7 +163,7 @@ export async function searchItems(query: string) {
   const allItems = await db
     .select()
     .from(items)
-    .where(eq(items.userId, session.user.id))
+    .where(and(eq(items.userId, session.user.id), isNull(items.deletedAt)))
     .orderBy(desc(items.createdAt));
 
   const searchLower = query.toLowerCase();
@@ -215,7 +215,7 @@ export async function listItemsByTag(tagId: string) {
     .select({ item: items })
     .from(itemTags)
     .innerJoin(items, eq(itemTags.itemId, items.id))
-    .where(and(eq(itemTags.tagId, tagId), eq(items.userId, session.user.id)))
+    .where(and(eq(itemTags.tagId, tagId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
     .orderBy(desc(items.createdAt));
 
   const itemsWithRelations: ItemWithRelations[] = await Promise.all(
@@ -259,7 +259,7 @@ export async function listItemsByCollection(collectionId: string) {
     .select({ item: items })
     .from(collectionItems)
     .innerJoin(items, eq(collectionItems.itemId, items.id))
-    .where(and(eq(collectionItems.collectionId, collectionId), eq(items.userId, session.user.id)))
+    .where(and(eq(collectionItems.collectionId, collectionId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
     .orderBy(desc(items.createdAt));
 
   const itemsWithRelations: ItemWithRelations[] = await Promise.all(

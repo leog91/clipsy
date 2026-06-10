@@ -48,6 +48,7 @@ Required variables:
 - `TURSO_AUTH_TOKEN` - Your Turso auth token
 - `BETTER_AUTH_SECRET` - Random secret for Better Auth (generate with `openssl rand -base64 32`)
 - `BETTER_AUTH_URL` - Your deployed app URL in production. Use `http://localhost:3000` only for local development.
+
 - `NEXT_PUBLIC_APP_URL` - Optional public app URL. If unset, auth requests use the current site origin. Do not set this to localhost in Vercel.
 
 Optional (for social auth):

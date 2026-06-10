@@ -18,6 +18,7 @@ export const items = sqliteTable("items", {
     .notNull()
     .default("to_watch"),
   lastPositionSeconds: integer("last_position_seconds"),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
@@ -28,6 +29,7 @@ export const tags = sqliteTable("tags", {
     .notNull()
     .references(() => user.id),
   name: text("name").notNull(),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 
 export const itemTags = sqliteTable("item_tags", {
@@ -38,6 +40,7 @@ export const itemTags = sqliteTable("item_tags", {
   tagId: text("tag_id")
     .notNull()
     .references(() => tags.id),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 
 export const collections = sqliteTable("collections", {
@@ -46,6 +49,7 @@ export const collections = sqliteTable("collections", {
     .notNull()
     .references(() => user.id),
   name: text("name").notNull(),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 
 export const collectionItems = sqliteTable("collection_items", {
@@ -56,4 +60,5 @@ export const collectionItems = sqliteTable("collection_items", {
   itemId: text("item_id")
     .notNull()
     .references(() => items.id),
+  deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
