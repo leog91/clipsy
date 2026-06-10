@@ -1,6 +1,0 @@
-{
-  "buildCommand": "bun x turbo run build --filter=clipsy",
-  "installCommand": "bun install",
-  "outputDirectory": "apps/web/.next",
-  "framework": "nextjs"
-}
