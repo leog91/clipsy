@@ -23,14 +23,36 @@ const getHost = (url: string | undefined) => {
   }
 };
 
-const authUrl = getOrigin(process.env.BETTER_AUTH_URL);
-const appUrl = getOrigin(process.env.NEXT_PUBLIC_APP_URL);
+const isLoopbackUrl = (url: string | undefined) => {
+  if (!url) return false;
+
+  try {
+    const { hostname } = new URL(url);
+    return (
+      hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1"
+    );
+  } catch {
+    return false;
+  }
+};
+
+const getProductionSafeOrigin = (url: string | undefined) => {
+  if (process.env.VERCEL && isLoopbackUrl(url)) return undefined;
+  return getOrigin(url);
+};
+
+const authUrl = getProductionSafeOrigin(process.env.BETTER_AUTH_URL);
+const appUrl = getProductionSafeOrigin(process.env.NEXT_PUBLIC_APP_URL);
 const vercelProjectUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : undefined;
+const vercelDeploymentUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : undefined;
 const authHost = getHost(authUrl);
 const appHost = getHost(appUrl);
-const fallbackUrl = authUrl || appUrl || vercelProjectUrl;
+const fallbackUrl =
+  authUrl || appUrl || vercelDeploymentUrl || vercelProjectUrl;
 
 export const auth = betterAuth({
   database: drizzleAdapter(getDb(), {
