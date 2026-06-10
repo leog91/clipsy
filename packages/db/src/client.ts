@@ -12,9 +12,10 @@ function getClient() {
 
   const url = process.env.TURSO_DATABASE_URL;
   if (!url) {
-    throw new Error(
-      "Missing TURSO_DATABASE_URL. Add it to the app environment before using the database.",
-    );
+    // Return a dummy client during build time - will throw when actually used
+    return createClient({
+      url: "libsql://dummy",
+    });
   }
 
   globalForDb.client = createClient({
