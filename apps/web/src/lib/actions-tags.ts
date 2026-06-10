@@ -1,8 +1,7 @@
 "use server";
 
-import { getDb } from "@clipsy/db";
+import { getDb, eq, and, sql } from "@clipsy/db";
 import { tags, itemTags } from "@clipsy/db/schema";
-import { eq, and, sql } from "drizzle-orm";
 import { auth } from "./auth";
 import { headers } from "next/headers";
 
@@ -63,6 +62,39 @@ export async function addTagToItem(itemId: string, tagId: string) {
     itemId,
     tagId,
   });
+}
+
+export async function listTagsWithCounts() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const db = getDb();
+
+  const tagsList = await db
+    .select()
+    .from(tags)
+    .where(eq(tags.userId, session.user.id));
+
+  const tagsWithCounts = await Promise.all(
+    tagsList.map(async (tag) => {
+      const count = await db
+        .select()
+        .from(itemTags)
+        .where(eq(itemTags.tagId, tag.id));
+
+      return {
+        ...tag,
+        itemCount: count.length,
+      };
+    })
+  );
+
+  return tagsWithCounts;
 }
 
 export async function createAndAddTagToItem(itemId: string, tagName: string) {

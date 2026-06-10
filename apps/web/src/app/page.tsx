@@ -15,7 +15,7 @@ export default async function HomePage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; status?: string; tag?: string; collection?: string; url?: string }>;
-}) {
+}): Promise<JSX.Element> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });

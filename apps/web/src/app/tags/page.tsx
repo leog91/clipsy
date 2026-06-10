@@ -1,28 +1,10 @@
-import { listTags, deleteTag, isTagUsed } from "@/lib/actions-tags";
-import { getDb } from "@clipsy/db";
-import { itemTags } from "@clipsy/db/schema";
-import { eq } from "drizzle-orm";
+import { listTagsWithCounts, deleteTag } from "@/lib/actions-tags";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { DeleteButton } from "@/components/delete-button";
 
-export default async function TagsPage() {
-  const tagsList = await listTags();
-  const db = getDb();
-
-  const tagsWithCounts = await Promise.all(
-    tagsList.map(async (tag) => {
-      const count = await db
-        .select()
-        .from(itemTags)
-        .where(eq(itemTags.tagId, tag.id));
-
-      return {
-        ...tag,
-        itemCount: count.length,
-      };
-    })
-  );
+export default async function TagsPage(): Promise<JSX.Element> {
+  const tagsWithCounts = await listTagsWithCounts();
 
   async function handleDeleteTag(formData: FormData) {
     "use server";

@@ -15,7 +15,7 @@ export default async function ItemDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) {
+}): Promise<JSX.Element> {
   const { id } = await params;
   const item = await getItemById(id);
 
@@ -26,8 +26,8 @@ export default async function ItemDetailPage({
   const allTags = await listTags();
   const allCollections = await listCollections();
 
-  const itemTagIds = new Set(item.tags.map((t) => t.id));
-  const itemCollectionIds = new Set(item.collections.map((c) => c.id));
+  const itemTagIds = new Set(item.tags.map((t: any) => t.id));
+  const itemCollectionIds = new Set(item.collections.map((c: any) => c.id));
 
   async function handleStatusChange(formData: FormData) {
     "use server";
@@ -156,7 +156,7 @@ export default async function ItemDetailPage({
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2 text-gray-100">Tags</h2>
           <div className="flex flex-wrap gap-2 mb-2">
-            {item.tags.map((tag) => (
+            {item.tags.map((tag: any) => (
               <div key={tag.id} className="flex items-center gap-1">
                 <Link
                   href={`/?tag=${tag.id}`}

@@ -15,7 +15,6 @@
     "@libsql/client": "^0.14.0",
     "@libsql/linux-x64-gnu": "^0.5.29",
     "better-auth": "^1.1.15",
-    "drizzle-orm": "0.38.3",
     "next": "^16.2.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

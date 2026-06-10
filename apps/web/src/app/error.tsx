@@ -6,7 +6,7 @@ export default function Error({
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-}) {
+}): JSX.Element {
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
       <div className="text-center">

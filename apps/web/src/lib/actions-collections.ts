@@ -1,8 +1,7 @@
 "use server";
 
-import { getDb } from "@clipsy/db";
+import { getDb, eq, and, sql } from "@clipsy/db";
 import { collections, collectionItems } from "@clipsy/db/schema";
-import { eq, and, sql } from "drizzle-orm";
 import { auth } from "./auth";
 import { headers } from "next/headers";
 
@@ -84,6 +83,39 @@ export async function removeItemFromCollection(itemId: string, collectionId: str
         eq(collectionItems.collectionId, collectionId)
       )
     );
+}
+
+export async function listCollectionsWithCounts() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const db = getDb();
+
+  const collectionsList = await db
+    .select()
+    .from(collections)
+    .where(eq(collections.userId, session.user.id));
+
+  const collectionsWithCounts = await Promise.all(
+    collectionsList.map(async (collection) => {
+      const count = await db
+        .select()
+        .from(collectionItems)
+        .where(eq(collectionItems.collectionId, collection.id));
+
+      return {
+        ...collection,
+        itemCount: count.length,
+      };
+    })
+  );
+
+  return collectionsWithCounts;
 }
 
 export async function createAndAddCollectionToItem(itemId: string, collectionName: string) {

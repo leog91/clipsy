@@ -3,6 +3,7 @@
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "jsx": "preserve",
+    "jsxImportSource": "react",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowJs": true,

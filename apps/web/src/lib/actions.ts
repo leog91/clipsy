@@ -1,9 +1,7 @@
 "use server";
 
-import { getDb } from "@clipsy/db";
+import { getDb, eq, and, desc } from "@clipsy/db";
 import { items, tags, itemTags, collections, collectionItems } from "@clipsy/db/schema";
-import { eq, and, desc, like, inArray } from "drizzle-orm";
-import { createItemSchema, updateItemSchema, searchItemsSchema } from "@clipsy/shared";
 import type { ItemWithRelations, UpdateItemInput } from "@clipsy/shared";
 import { fetchYouTubeMetadata } from "./youtube";
 import { auth } from "./auth";

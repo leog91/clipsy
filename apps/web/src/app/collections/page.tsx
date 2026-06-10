@@ -1,28 +1,10 @@
-import { listCollections, deleteCollection } from "@/lib/actions-collections";
-import { getDb } from "@clipsy/db";
-import { collectionItems } from "@clipsy/db/schema";
-import { eq } from "drizzle-orm";
+import { listCollectionsWithCounts, deleteCollection } from "@/lib/actions-collections";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { DeleteButton } from "@/components/delete-button";
 
-export default async function CollectionsPage() {
-  const collectionsList = await listCollections();
-  const db = getDb();
-
-  const collectionsWithCounts = await Promise.all(
-    collectionsList.map(async (collection) => {
-      const count = await db
-        .select()
-        .from(collectionItems)
-        .where(eq(collectionItems.collectionId, collection.id));
-
-      return {
-        ...collection,
-        itemCount: count.length,
-      };
-    })
-  );
+export default async function CollectionsPage(): Promise<JSX.Element> {
+  const collectionsWithCounts = await listCollectionsWithCounts();
 
   async function handleDeleteCollection(formData: FormData) {
     "use server";
