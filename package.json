@@ -1,0 +1,25 @@
+{
+  "name": "clipsy",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:push": "turbo run db:push --filter=@clipsy/db",
+    "db:generate": "turbo run db:generate --filter=@clipsy/db",
+    "db:migrate": "turbo run db:migrate --filter=@clipsy/db"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "overrides": {
+    "drizzle-orm": "0.38.3"
+  },
+  "packageManager": "bun@1.1.42"
+}

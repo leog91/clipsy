@@ -1,0 +1,54 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# testing
+coverage/
+
+# next.js
+.next/
+out/
+
+# production
+build/
+dist/
+
+# misc
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# local env files
+.env
+.env.local
+.env.*.local
+
+# turbo
+.turbo/
+
+# bun
+bun.lockb
+
+# drizzle
+packages/db/drizzle/
+
+# extension
+apps/extension/build/
+apps/extension/chrome-mv3-prod/
+apps/extension/chrome-mv3-dev/
+apps/extension/.plasmo/
+
+# temp files
+*.tmp
+*.temp

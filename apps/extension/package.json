@@ -1,0 +1,48 @@
+{
+  "name": "@clipsy/extension",
+  "displayName": "Clipsy",
+  "version": "0.1.0",
+  "description": "Save YouTube videos to Clipsy",
+  "author": "Clipsy",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "plasmo": "^0.89.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "typescript": "^5.7.2"
+  },
+  "plasmo": {
+    "manifest": {
+      "host_permissions": [
+        "https://*.youtube.com/*"
+      ],
+      "permissions": [
+        "activeTab"
+      ],
+      "content_scripts": [
+        {
+          "matches": ["*://*.youtube.com/watch*"],
+          "js": ["contents/save-button.tsx"]
+        }
+      ]
+    }
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*.youtube.com/*"
+    ],
+    "permissions": [
+      "activeTab"
+    ]
+  }
+}
