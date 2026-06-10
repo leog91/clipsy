@@ -12,7 +12,10 @@ function getClient() {
 
   const url = process.env.TURSO_DATABASE_URL;
   if (!url) {
-    throw new Error("TURSO_DATABASE_URL is not set");
+    // Return a dummy client during build time - will throw when actually used
+    return createClient({
+      url: "libsql://dummy",
+    });
   }
 
   globalForDb.client = createClient({
