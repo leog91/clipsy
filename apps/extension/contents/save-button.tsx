@@ -30,7 +30,8 @@ const SaveButton = () => {
         return;
       }
 
-      const webAppUrl = `http://localhost:3000/?url=${encodeURIComponent(url)}`;
+      const webAppUrlBase = process.env.PLASMO_PUBLIC_WEB_APP_URL || "https://clipsy-web-sepia.vercel.app";
+      const webAppUrl = `${webAppUrlBase}/?url=${encodeURIComponent(url)}`;
       window.open(webAppUrl, "_blank");
 
       setSaved(true);
