@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { signOut } from "@/lib/actions-auth";
+import { isAdminUser } from "@/lib/admin-emails";
 
 export default async function HomePage({
   searchParams,
@@ -60,14 +61,24 @@ export default async function HomePage({
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold">Clipsy</h1>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm text-gray-400 hover:text-gray-100"
-            >
-              Sign Out
-            </button>
-          </form>
+          <div className="flex items-center gap-4">
+            {isAdminUser(session.user) && (
+              <Link
+                href="/admin"
+                className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-gray-100 rounded-md transition-colors"
+              >
+                Admin Panel
+              </Link>
+            )}
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm text-gray-400 hover:text-gray-100"
+              >
+                Sign Out
+              </button>
+            </form>
+          </div>
         </div>
 
         <div className="flex gap-4 mb-4">
