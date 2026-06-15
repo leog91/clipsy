@@ -1,9 +1,10 @@
-import { listItems, searchItems, listItemsByTag, listItemsByCollection, createItemFromUrl } from "@/lib/actions";
+import { listItems, searchItems, listItemsByTag, listItemsByCollection } from "@/lib/actions";
 import { listTags } from "@/lib/actions-tags";
 import { listCollections } from "@/lib/actions-collections";
 import { ItemCard } from "@/components/item-card";
 import { AddItemForm } from "@/components/add-item-form";
 import { SearchBar } from "@/components/search-bar";
+import { SaveClipConfirmation } from "@/components/save-clip-confirmation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -31,12 +32,6 @@ export default async function HomePage({
   const tagId = params.tag;
   const collectionId = params.collection;
   const urlParam = params.url;
-
-  // Auto-save if URL parameter is present
-  if (urlParam) {
-    await createItemFromUrl(urlParam);
-    redirect("/");
-  }
 
   let items;
   let filterLabel = "";
@@ -98,6 +93,14 @@ export default async function HomePage({
             Tags
           </Link>
         </div>
+
+        {urlParam && (
+          <div className="mb-6">
+            <Suspense fallback={<div className="h-32 bg-gray-800 rounded-lg animate-pulse" />}>
+              <SaveClipConfirmation url={urlParam} />
+            </Suspense>
+          </div>
+        )}
 
         <div className="mb-6">
           <AddItemForm />
