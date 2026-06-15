@@ -1,7 +1,7 @@
 "use server";
 
 import { getDb, eq, and, sql, isNull } from "@clipsy/db";
-import { tags, itemTags } from "@clipsy/db/schema";
+import { tags, itemTags, items } from "@clipsy/db/schema";
 import { auth } from "./auth";
 import { headers } from "next/headers";
 
@@ -55,6 +55,23 @@ export async function addTagToItem(itemId: string, tagId: string) {
   }
 
   const db = getDb();
+
+  const [item] = await db
+    .select()
+    .from(items)
+    .where(and(eq(items.id, itemId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
+    .limit(1);
+
+  const [tag] = await db
+    .select()
+    .from(tags)
+    .where(and(eq(tags.id, tagId), eq(tags.userId, session.user.id), isNull(tags.deletedAt)))
+    .limit(1);
+
+  if (!item || !tag) {
+    throw new Error("Unauthorized");
+  }
+
   const id = crypto.randomUUID();
 
   await db.insert(itemTags).values({
@@ -85,7 +102,7 @@ export async function listTagsWithCounts() {
       const count = await db
         .select()
         .from(itemTags)
-        .where(eq(itemTags.tagId, tag.id));
+        .where(and(eq(itemTags.tagId, tag.id), isNull(itemTags.deletedAt)));
 
       return {
         ...tag,
@@ -107,6 +124,16 @@ export async function createAndAddTagToItem(itemId: string, tagName: string) {
   }
 
   const db = getDb();
+
+  const [item] = await db
+    .select()
+    .from(items)
+    .where(and(eq(items.id, itemId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
+    .limit(1);
+
+  if (!item) {
+    throw new Error("Unauthorized");
+  }
 
   const [existingTag] = await db
     .select()
@@ -146,6 +173,16 @@ export async function removeTagFromItem(itemId: string, tagId: string) {
 
   const db = getDb();
 
+  const [item] = await db
+    .select()
+    .from(items)
+    .where(and(eq(items.id, itemId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
+    .limit(1);
+
+  if (!item) {
+    throw new Error("Unauthorized");
+  }
+
   await db
     .delete(itemTags)
     .where(and(eq(itemTags.itemId, itemId), eq(itemTags.tagId, tagId)));
@@ -162,16 +199,26 @@ export async function deleteTag(id: string) {
 
   const db = getDb();
 
+  const [tag] = await db
+    .select()
+    .from(tags)
+    .where(and(eq(tags.id, id), eq(tags.userId, session.user.id), isNull(tags.deletedAt)))
+    .limit(1);
+
+  if (!tag) {
+    throw new Error("Unauthorized");
+  }
+
   const [usageCount] = await db
     .select({ count: sql<number>`count(*)` })
     .from(itemTags)
-    .where(eq(itemTags.tagId, id));
+    .where(and(eq(itemTags.tagId, id), isNull(itemTags.deletedAt)));
 
   if (usageCount && usageCount.count > 0) {
     throw new Error("Cannot delete tag that is being used");
   }
 
-  await db.delete(tags).where(and(eq(tags.id, id), eq(tags.userId, session.user.id)));
+  await db.delete(tags).where(eq(tags.id, id));
 }
 
 export async function isTagUsed(id: string): Promise<boolean> {
@@ -185,10 +232,20 @@ export async function isTagUsed(id: string): Promise<boolean> {
 
   const db = getDb();
 
+  const [tag] = await db
+    .select()
+    .from(tags)
+    .where(and(eq(tags.id, id), eq(tags.userId, session.user.id), isNull(tags.deletedAt)))
+    .limit(1);
+
+  if (!tag) {
+    throw new Error("Unauthorized");
+  }
+
   const [usageCount] = await db
     .select({ count: sql<number>`count(*)` })
     .from(itemTags)
-    .where(eq(itemTags.tagId, id));
+    .where(and(eq(itemTags.tagId, id), isNull(itemTags.deletedAt)));
 
   return usageCount ? usageCount.count > 0 : false;
 }

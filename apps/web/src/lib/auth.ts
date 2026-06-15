@@ -54,12 +54,16 @@ const appHost = getHost(appUrl);
 const fallbackUrl =
   authUrl || appUrl || vercelDeploymentUrl || vercelProjectUrl;
 
+if (!process.env.BETTER_AUTH_SECRET) {
+  throw new Error("BETTER_AUTH_SECRET is required");
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(getDb(), {
     provider: "sqlite",
     schema,
   }),
-  secret: process.env.BETTER_AUTH_SECRET || "dev-secret-change-in-production",
+  secret: process.env.BETTER_AUTH_SECRET,
   baseURL:
     process.env.VERCEL
       ? {

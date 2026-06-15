@@ -1,7 +1,7 @@
 "use server";
 
 import { getDb, eq, and, sql, isNull } from "@clipsy/db";
-import { collections, collectionItems } from "@clipsy/db/schema";
+import { collections, collectionItems, items } from "@clipsy/db/schema";
 import { auth } from "./auth";
 import { headers } from "next/headers";
 
@@ -55,6 +55,23 @@ export async function addItemToCollection(itemId: string, collectionId: string) 
   }
 
   const db = getDb();
+
+  const [item] = await db
+    .select()
+    .from(items)
+    .where(and(eq(items.id, itemId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
+    .limit(1);
+
+  const [collection] = await db
+    .select()
+    .from(collections)
+    .where(and(eq(collections.id, collectionId), eq(collections.userId, session.user.id), isNull(collections.deletedAt)))
+    .limit(1);
+
+  if (!item || !collection) {
+    throw new Error("Unauthorized");
+  }
+
   const id = crypto.randomUUID();
 
   await db.insert(collectionItems).values({
@@ -74,6 +91,16 @@ export async function removeItemFromCollection(itemId: string, collectionId: str
   }
 
   const db = getDb();
+
+  const [item] = await db
+    .select()
+    .from(items)
+    .where(and(eq(items.id, itemId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
+    .limit(1);
+
+  if (!item) {
+    throw new Error("Unauthorized");
+  }
 
   await db
     .delete(collectionItems)
@@ -106,7 +133,7 @@ export async function listCollectionsWithCounts() {
       const count = await db
         .select()
         .from(collectionItems)
-        .where(eq(collectionItems.collectionId, collection.id));
+        .where(and(eq(collectionItems.collectionId, collection.id), isNull(collectionItems.deletedAt)));
 
       return {
         ...collection,
@@ -128,6 +155,16 @@ export async function createAndAddCollectionToItem(itemId: string, collectionNam
   }
 
   const db = getDb();
+
+  const [item] = await db
+    .select()
+    .from(items)
+    .where(and(eq(items.id, itemId), eq(items.userId, session.user.id), isNull(items.deletedAt)))
+    .limit(1);
+
+  if (!item) {
+    throw new Error("Unauthorized");
+  }
 
   const [existingCollection] = await db
     .select()
@@ -167,16 +204,26 @@ export async function deleteCollection(id: string) {
 
   const db = getDb();
 
+  const [collection] = await db
+    .select()
+    .from(collections)
+    .where(and(eq(collections.id, id), eq(collections.userId, session.user.id), isNull(collections.deletedAt)))
+    .limit(1);
+
+  if (!collection) {
+    throw new Error("Unauthorized");
+  }
+
   const [usageCount] = await db
     .select({ count: sql<number>`count(*)` })
     .from(collectionItems)
-    .where(eq(collectionItems.collectionId, id));
+    .where(and(eq(collectionItems.collectionId, id), isNull(collectionItems.deletedAt)));
 
   if (usageCount && usageCount.count > 0) {
     throw new Error("Cannot delete collection that is being used");
   }
 
-  await db.delete(collections).where(and(eq(collections.id, id), eq(collections.userId, session.user.id)));
+  await db.delete(collections).where(eq(collections.id, id));
 }
 
 export async function isCollectionUsed(id: string): Promise<boolean> {
@@ -190,10 +237,20 @@ export async function isCollectionUsed(id: string): Promise<boolean> {
 
   const db = getDb();
 
+  const [collection] = await db
+    .select()
+    .from(collections)
+    .where(and(eq(collections.id, id), eq(collections.userId, session.user.id), isNull(collections.deletedAt)))
+    .limit(1);
+
+  if (!collection) {
+    throw new Error("Unauthorized");
+  }
+
   const [usageCount] = await db
     .select({ count: sql<number>`count(*)` })
     .from(collectionItems)
-    .where(eq(collectionItems.collectionId, id));
+    .where(and(eq(collectionItems.collectionId, id), isNull(collectionItems.deletedAt)));
 
   return usageCount ? usageCount.count > 0 : false;
 }
