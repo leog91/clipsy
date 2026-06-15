@@ -11,6 +11,7 @@ export interface Item {
   duration: number | null;
   status: "to_watch" | "watching";
   lastPositionSeconds: number | null;
+  startAtSeconds: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,4 +53,5 @@ export interface YouTubeMetadata {
   thumbnail?: string;
   channel?: string;
   duration?: number;
+  startAtSeconds?: number;
 }

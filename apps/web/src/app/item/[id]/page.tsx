@@ -10,6 +10,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { DeleteButton } from "@/components/delete-button";
+import { formatTimestamp } from "@/lib/youtube";
 
 export default async function ItemDetailPage({
   params,
@@ -93,6 +94,27 @@ export default async function ItemDetailPage({
     redirect("/");
   }
 
+  async function handleStartAtChange(formData: FormData) {
+    "use server";
+    const raw = formData.get("startAtSeconds") as string;
+    const numeric = raw.trim() === "" ? undefined : Math.max(0, Math.floor(Number(raw)));
+    if (numeric !== undefined && Number.isNaN(numeric)) return;
+    await updateItem(id, { startAtSeconds: numeric });
+    revalidatePath(`/item/${id}`);
+    revalidatePath("/");
+  }
+
+  const youtubeUrl = (() => {
+    try {
+      return new URL(item.url);
+    } catch {
+      return new URL(`https://www.youtube.com/watch?v=${item.sourceId}`);
+    }
+  })();
+  if (item.startAtSeconds !== null && item.startAtSeconds > 0) {
+    youtubeUrl.searchParams.set("t", `${item.startAtSeconds}s`);
+  }
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
@@ -112,11 +134,16 @@ export default async function ItemDetailPage({
           {item.channel && (
             <p className="text-lg text-gray-400 mb-2">{item.channel}</p>
           )}
+          {item.startAtSeconds !== null && item.startAtSeconds > 0 && (
+            <p className="text-sm text-teal-400 mb-2">
+              Starts at {formatTimestamp(item.startAtSeconds)}
+            </p>
+          )}
           {item.description && (
             <p className="text-gray-300 mb-4">{item.description}</p>
           )}
           <a
-            href={item.url}
+            href={youtubeUrl.toString()}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
@@ -151,6 +178,35 @@ export default async function ItemDetailPage({
               Update
             </button>
           </form>
+        </div>
+
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-2 text-gray-100">Start Time</h2>
+          <form action={handleStartAtChange} className="flex items-center gap-2">
+            <input
+              type="number"
+              name="startAtSeconds"
+              min={0}
+              step={1}
+              defaultValue={item.startAtSeconds ?? ""}
+              placeholder="Seconds"
+              className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 w-32"
+            />
+            <span className="text-gray-400 text-sm">
+              {item.startAtSeconds !== null && item.startAtSeconds >= 0
+                ? formatTimestamp(item.startAtSeconds)
+                : "No start time"}
+            </span>
+            <button
+              type="submit"
+              className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Update
+            </button>
+          </form>
+          <p className="text-gray-500 text-sm mt-1">
+            Leave empty to start from the beginning. Saved clips under 10 seconds are added without a timestamp.
+          </p>
         </div>
 
         <div className="mb-6">

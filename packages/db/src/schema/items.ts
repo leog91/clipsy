@@ -18,6 +18,7 @@ export const items = sqliteTable("items", {
     .notNull()
     .default("to_watch"),
   lastPositionSeconds: integer("last_position_seconds"),
+  startAtSeconds: integer("start_at_seconds"),
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),

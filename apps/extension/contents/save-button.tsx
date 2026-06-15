@@ -1,4 +1,5 @@
 import React from "react";
+import { STORAGE_KEYS, getWebAppUrl } from "~/utils";
 
 export const getStyle = () => {
   return {
@@ -13,14 +14,13 @@ export const config = {
   matches: ["*://*.youtube.com/watch*"],
 };
 
-const STORAGE_KEY = "hideInFullscreen";
-
 const SaveButton = () => {
   const [saving, setSaving] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
   const [error, setError] = React.useState("");
   const [isFullscreen, setIsFullscreen] = React.useState(false);
   const [hideInFullscreen, setHideInFullscreen] = React.useState(true);
+  const [devMode, setDevMode] = React.useState(false);
 
   React.useEffect(() => {
     const updateFullscreen = () => {
@@ -34,15 +34,37 @@ const SaveButton = () => {
   }, []);
 
   React.useEffect(() => {
-    chrome.storage.local.get(STORAGE_KEY, (result) => {
-      if (typeof result[STORAGE_KEY] === "boolean") {
-        setHideInFullscreen(result[STORAGE_KEY]);
+    const listener = (request: { type: string }, _sender: chrome.runtime.MessageSender, sendResponse: (response: { currentTime: number; fullscreen: boolean }) => void) => {
+      if (request.type === "GET_VIDEO_STATE") {
+        const video = document.querySelector("video");
+        sendResponse({
+          currentTime: video?.currentTime ?? 0,
+          fullscreen: Boolean(document.fullscreenElement),
+        });
+      }
+      return true;
+    };
+
+    chrome.runtime.onMessage.addListener(listener);
+    return () => chrome.runtime.onMessage.removeListener(listener);
+  }, []);
+
+  React.useEffect(() => {
+    chrome.storage.local.get([STORAGE_KEYS.hideInFullscreen, STORAGE_KEYS.devMode], (result) => {
+      if (typeof result[STORAGE_KEYS.hideInFullscreen] === "boolean") {
+        setHideInFullscreen(result[STORAGE_KEYS.hideInFullscreen]);
+      }
+      if (typeof result[STORAGE_KEYS.devMode] === "boolean") {
+        setDevMode(result[STORAGE_KEYS.devMode]);
       }
     });
 
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-      if (changes[STORAGE_KEY] && typeof changes[STORAGE_KEY].newValue === "boolean") {
-        setHideInFullscreen(changes[STORAGE_KEY].newValue);
+      if (changes[STORAGE_KEYS.hideInFullscreen] && typeof changes[STORAGE_KEYS.hideInFullscreen].newValue === "boolean") {
+        setHideInFullscreen(changes[STORAGE_KEYS.hideInFullscreen].newValue);
+      }
+      if (changes[STORAGE_KEYS.devMode] && typeof changes[STORAGE_KEYS.devMode].newValue === "boolean") {
+        setDevMode(changes[STORAGE_KEYS.devMode].newValue);
       }
     };
 
@@ -62,8 +84,12 @@ const SaveButton = () => {
         return;
       }
 
-      const webAppUrlBase = process.env.PLASMO_PUBLIC_WEB_APP_URL || "https://clipsy-web-sepia.vercel.app";
-      const webAppUrl = `${webAppUrlBase}/?url=${encodeURIComponent(url)}`;
+      const video = document.querySelector("video");
+      const currentTime = video?.currentTime ?? 0;
+      const urlWithTimestamp = currentTime >= 10 ? `${url}&t=${Math.floor(currentTime)}s` : url;
+
+      const webAppUrlBase = getWebAppUrl(devMode);
+      const webAppUrl = `${webAppUrlBase}/?url=${encodeURIComponent(urlWithTimestamp)}`;
       window.open(webAppUrl, "_blank");
 
       setSaved(true);

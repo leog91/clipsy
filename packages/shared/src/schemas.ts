@@ -9,6 +9,7 @@ export const createItemSchema = z.object({
   thumbnail: z.string().optional(),
   channel: z.string().optional(),
   duration: z.number().int().positive().optional(),
+  startAtSeconds: z.number().int().nonnegative().optional(),
   source: z.string().default("youtube"),
   sourceId: z.string().min(1),
 });
@@ -21,6 +22,7 @@ export const updateItemSchema = z.object({
   duration: z.number().int().positive().optional(),
   status: itemStatusEnum.optional(),
   lastPositionSeconds: z.number().int().nonnegative().optional(),
+  startAtSeconds: z.number().int().nonnegative().optional(),
 });
 
 export const searchItemsSchema = z.object({

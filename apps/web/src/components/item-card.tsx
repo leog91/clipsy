@@ -3,6 +3,7 @@
 import type { ItemWithRelations } from "@clipsy/shared";
 import Link from "next/link";
 import { deleteItem } from "@/lib/actions";
+import { formatTimestamp } from "@/lib/youtube";
 import { useRouter } from "next/navigation";
 
 interface ItemCardProps {
@@ -48,6 +49,11 @@ export function ItemCard({ item }: ItemCardProps) {
               >
                 {item.status === "to_watch" ? "To Watch" : "Watching"}
               </span>
+              {item.startAtSeconds !== null && item.startAtSeconds > 0 && (
+                <span className="text-xs px-2 py-1 rounded bg-teal-900 text-teal-200">
+                  Starts at {formatTimestamp(item.startAtSeconds)}
+                </span>
+              )}
               {item.tags.map((tag) => (
                 <Link
                   key={tag.id}

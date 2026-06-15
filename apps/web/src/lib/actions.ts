@@ -36,6 +36,7 @@ export async function createItemFromUrl(url: string) {
     thumbnail: metadata.thumbnail || null,
     channel: metadata.channel || null,
     duration: metadata.duration || null,
+    startAtSeconds: metadata.startAtSeconds ?? null,
     status: "to_watch",
     createdAt: now,
     updatedAt: now,
