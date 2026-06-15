@@ -13,10 +13,42 @@ export const config = {
   matches: ["*://*.youtube.com/watch*"],
 };
 
+const STORAGE_KEY = "hideInFullscreen";
+
 const SaveButton = () => {
   const [saving, setSaving] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+  const [hideInFullscreen, setHideInFullscreen] = React.useState(true);
+
+  React.useEffect(() => {
+    const updateFullscreen = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    updateFullscreen();
+
+    document.addEventListener("fullscreenchange", updateFullscreen);
+    return () => document.removeEventListener("fullscreenchange", updateFullscreen);
+  }, []);
+
+  React.useEffect(() => {
+    chrome.storage.local.get(STORAGE_KEY, (result) => {
+      if (typeof result[STORAGE_KEY] === "boolean") {
+        setHideInFullscreen(result[STORAGE_KEY]);
+      }
+    });
+
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes[STORAGE_KEY] && typeof changes[STORAGE_KEY].newValue === "boolean") {
+        setHideInFullscreen(changes[STORAGE_KEY].newValue);
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -43,6 +75,8 @@ const SaveButton = () => {
     }
   };
 
+  const hidden = isFullscreen && hideInFullscreen;
+
   return (
     <div
       style={{
@@ -51,6 +85,9 @@ const SaveButton = () => {
         right: "20px",
         zIndex: 99999,
         fontFamily: "system-ui, -apple-system, sans-serif",
+        display: hidden ? "none" : "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
       }}
     >
       <button
