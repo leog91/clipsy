@@ -42,6 +42,15 @@ export const createCollectionSchema = z.object({
   name: z.string().min(1).max(100),
 });
 
+export const createChannelCategorySchema = z.object({
+  name: z.string().min(1).max(50),
+});
+
+export const createSubscriptionSchema = z.object({
+  url: z.string().url(),
+  categoryId: z.string().optional(),
+});
+
 export const youtubeUrlSchema = z.string().url().refine(
   (url) => {
     const patterns = [
@@ -60,3 +69,5 @@ export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 export type SearchItemsInput = z.infer<typeof searchItemsSchema>;
 export type CreateTagInput = z.infer<typeof createTagSchema>;
 export type CreateCollectionInput = z.infer<typeof createCollectionSchema>;
+export type CreateChannelCategoryInput = z.infer<typeof createChannelCategorySchema>;
+export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>;

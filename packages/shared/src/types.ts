@@ -55,3 +55,43 @@ export interface YouTubeMetadata {
   duration?: number;
   startAtSeconds?: number;
 }
+
+export interface ChannelCategory {
+  id: string;
+  userId: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Channel {
+  id: string;
+  source: string;
+  sourceId: string;
+  name: string;
+  thumbnail: string | null;
+  url: string;
+  lastVideoId: string | null;
+  lastVideoTitle: string | null;
+  lastVideoThumbnail: string | null;
+  lastVideoPublishedAt: Date | null;
+  lastCheckedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Subscription {
+  id: string;
+  userId: string;
+  channelId: string;
+  categoryId: string | null;
+  lastSeenAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SubscriptionWithChannel extends Subscription {
+  channel: Channel;
+  category: ChannelCategory | null;
+  hasNew: boolean;
+}

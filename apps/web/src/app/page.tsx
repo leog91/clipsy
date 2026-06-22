@@ -86,6 +86,9 @@ export default async function HomePage({
           <Link href="/?status=watching" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100">
             Watching
           </Link>
+          <Link href="/subscriptions" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100">
+            Subscriptions
+          </Link>
           <Link href="/collections" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100">
             Collections
           </Link>
