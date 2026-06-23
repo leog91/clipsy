@@ -40,6 +40,7 @@ export const createTagSchema = z.object({
 
 export const createCollectionSchema = z.object({
   name: z.string().min(1).max(100),
+  isPublic: z.boolean().optional(),
 });
 
 export const createChannelCategorySchema = z.object({

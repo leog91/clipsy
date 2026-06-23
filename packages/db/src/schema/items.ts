@@ -50,6 +50,7 @@ export const collections = sqliteTable("collections", {
     .notNull()
     .references(() => user.id),
   name: text("name").notNull(),
+  isPublic: integer("is_public", { mode: "boolean" }).notNull().default(false),
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 

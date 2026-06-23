@@ -1,11 +1,16 @@
 "use server";
 
 import { getDb, eq, and, sql, isNull } from "@clipsy/db";
-import { collections, collectionItems, items } from "@clipsy/db/schema";
+import { collections, collectionItems, items, tags, itemTags } from "@clipsy/db/schema";
 import { auth } from "./auth";
 import { headers } from "next/headers";
+import { unstable_cache, revalidateTag } from "next/cache";
 
-export async function createCollection(name: string) {
+function getShareCacheTag(collectionId: string) {
+  return `share-collection-${collectionId}`;
+}
+
+export async function createCollection(name: string, isPublic = false) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -21,6 +26,7 @@ export async function createCollection(name: string) {
     id: collectionId,
     userId: session.user.id,
     name,
+    isPublic,
   });
 
   return { id: collectionId };
@@ -79,6 +85,8 @@ export async function addItemToCollection(itemId: string, collectionId: string) 
     collectionId,
     itemId,
   });
+
+  revalidateTag(getShareCacheTag(collectionId), "default");
 }
 
 export async function removeItemFromCollection(itemId: string, collectionId: string) {
@@ -110,6 +118,8 @@ export async function removeItemFromCollection(itemId: string, collectionId: str
         eq(collectionItems.collectionId, collectionId)
       )
     );
+
+  revalidateTag(getShareCacheTag(collectionId), "default");
 }
 
 export async function listCollectionsWithCounts() {
@@ -145,7 +155,7 @@ export async function listCollectionsWithCounts() {
   return collectionsWithCounts;
 }
 
-export async function createAndAddCollectionToItem(itemId: string, collectionName: string) {
+export async function createAndAddCollectionToItem(itemId: string, collectionName: string, isPublic = false) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -180,6 +190,7 @@ export async function createAndAddCollectionToItem(itemId: string, collectionNam
       id: collectionId,
       userId: session.user.id,
       name: collectionName,
+      isPublic,
     });
   } else {
     collectionId = existingCollection.id;
@@ -191,6 +202,8 @@ export async function createAndAddCollectionToItem(itemId: string, collectionNam
     collectionId,
     itemId,
   });
+
+  revalidateTag(getShareCacheTag(collectionId), "default");
 }
 
 export async function deleteCollection(id: string) {
@@ -224,6 +237,8 @@ export async function deleteCollection(id: string) {
   }
 
   await db.delete(collections).where(eq(collections.id, id));
+
+  revalidateTag(getShareCacheTag(id), "default");
 }
 
 export async function isCollectionUsed(id: string): Promise<boolean> {
@@ -253,4 +268,124 @@ export async function isCollectionUsed(id: string): Promise<boolean> {
     .where(and(eq(collectionItems.collectionId, id), isNull(collectionItems.deletedAt)));
 
   return usageCount ? usageCount.count > 0 : false;
+}
+
+export async function updateCollectionVisibility(id: string, isPublic: boolean) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const db = getDb();
+
+  const [collection] = await db
+    .select()
+    .from(collections)
+    .where(and(eq(collections.id, id), eq(collections.userId, session.user.id), isNull(collections.deletedAt)))
+    .limit(1);
+
+  if (!collection) {
+    throw new Error("Unauthorized");
+  }
+
+  await db
+    .update(collections)
+    .set({ isPublic })
+    .where(eq(collections.id, id));
+
+  revalidateTag(getShareCacheTag(id), "default");
+}
+
+export interface PublicCollectionWithItems {
+  id: string;
+  name: string;
+  isPublic: boolean;
+  items: {
+    id: string;
+    sourceId: string;
+    url: string;
+    title: string;
+    description: string | null;
+    thumbnail: string | null;
+    channel: string | null;
+    duration: number | null;
+    startAtSeconds: number | null;
+    tags: {
+      id: string;
+      name: string;
+    }[];
+  }[];
+}
+
+const fetchPublicCollection = async (id: string): Promise<PublicCollectionWithItems | null> => {
+  const db = getDb();
+
+  const [collection] = await db
+    .select()
+    .from(collections)
+    .where(and(eq(collections.id, id), eq(collections.isPublic, true), isNull(collections.deletedAt)))
+    .limit(1);
+
+  if (!collection) {
+    return null;
+  }
+
+  const collectionItemsList = await db
+    .select({ item: items })
+    .from(collectionItems)
+    .innerJoin(items, eq(collectionItems.itemId, items.id))
+    .where(
+      and(
+        eq(collectionItems.collectionId, id),
+        isNull(collectionItems.deletedAt),
+        isNull(items.deletedAt)
+      )
+    )
+    .orderBy(sql`${items.createdAt} desc`);
+
+  const itemsWithTags = await Promise.all(
+    collectionItemsList.map(async ({ item }) => {
+      const itemTagsList = await db
+        .select({ id: tags.id, name: tags.name })
+        .from(itemTags)
+        .innerJoin(tags, eq(itemTags.tagId, tags.id))
+        .where(and(eq(itemTags.itemId, item.id), isNull(itemTags.deletedAt)));
+
+      return {
+        id: item.id,
+        sourceId: item.sourceId,
+        url: item.url,
+        title: item.title,
+        description: item.description,
+        thumbnail: item.thumbnail,
+        channel: item.channel,
+        duration: item.duration,
+        startAtSeconds: item.startAtSeconds,
+        tags: itemTagsList,
+      };
+    })
+  );
+
+  return {
+    id: collection.id,
+    name: collection.name,
+    isPublic: collection.isPublic,
+    items: itemsWithTags,
+  };
+};
+
+export async function getPublicCollectionById(id: string): Promise<PublicCollectionWithItems | null> {
+  const cachedFetch = unstable_cache(
+    () => fetchPublicCollection(id),
+    [`public-collection-${id}`],
+    {
+      tags: [getShareCacheTag(id)],
+      revalidate: 60,
+    }
+  );
+
+  return cachedFetch();
 }

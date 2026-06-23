@@ -19,7 +19,7 @@ export function AddItemForm() {
       await createItemFromUrl(url);
       setUrl("");
       router.refresh();
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to add video. Please check the URL and try again.");
     } finally {
       setLoading(false);

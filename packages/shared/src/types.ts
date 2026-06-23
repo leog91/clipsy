@@ -26,6 +26,7 @@ export interface Collection {
   id: string;
   userId: string;
   name: string;
+  isPublic: boolean;
 }
 
 export interface ItemWithTags extends Item {

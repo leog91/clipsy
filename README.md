@@ -7,6 +7,7 @@ A search-first YouTube bookmarking app. Save videos via URL or chrome extension 
 - Save YouTube videos via URL
 - Auto-fetch metadata (title, thumbnail, channel, duration)
 - Organize with tags and collections
+- Share collections publicly with a toggle
 - Fast search over saved content
 - Status tracking (to_watch, watching)
 - Chrome extension for quick saving
@@ -107,8 +108,9 @@ clipsy/
 1. Sign in with email/password or social auth
 2. Paste a YouTube URL to save a video
 3. Organize with tags and collections
-4. Search by title, channel, or tags
-5. Click to open videos on YouTube
+4. Toggle a collection to public and share it via `/share/<collection-id>`
+5. Search by title, channel, or tags
+6. Click to open videos on YouTube
 
 ### Chrome Extension
 
@@ -127,6 +129,8 @@ clipsy/
 - `POST /api/tags` - Create tag
 - `GET /api/collections` - List collections
 - `POST /api/collections` - Create collection
+- `PATCH /api/collections/[id]` - Update collection visibility
+- `GET /share/[collectionId]` - Public shared collection page
 
 ## Development Commands
 

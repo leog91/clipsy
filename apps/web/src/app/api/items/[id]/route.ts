@@ -15,7 +15,7 @@ export async function GET(
     }
 
     return NextResponse.json(item);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to fetch item" }, { status: 500 });
   }
 }
@@ -31,7 +31,7 @@ export async function PUT(
 
     await updateItem(id, validated);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to update item" }, { status: 500 });
   }
 }

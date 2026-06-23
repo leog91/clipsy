@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { createItemFromUrl, listItems } from "@/lib/actions";
 
 export async function GET() {
   try {
     const itemsList = await listItems();
     return NextResponse.json(itemsList);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to fetch items" }, { status: 500 });
   }
 }
@@ -22,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     const result = await createItemFromUrl(url);
     return NextResponse.json(result, { status: 201 });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to create item" }, { status: 500 });
   }
 }

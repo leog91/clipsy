@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const tagsList = await listTags();
     return NextResponse.json(tagsList);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to fetch tags" }, { status: 500 });
   }
 }
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     const result = await createTag(name);
     return NextResponse.json(result, { status: 201 });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to create tag" }, { status: 500 });
   }
 }

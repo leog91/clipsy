@@ -2,6 +2,8 @@ import { listCollectionsWithCounts, deleteCollection } from "@/lib/actions-colle
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { DeleteButton } from "@/components/delete-button";
+import { CollectionPublicToggle } from "@/components/collection-public-toggle";
+import { CopyShareLink } from "@/components/copy-share-link";
 
 export default async function CollectionsPage(): Promise<JSX.Element> {
   const collectionsWithCounts = await listCollectionsWithCounts();
@@ -25,7 +27,7 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
         <div className="space-y-4">
           {collectionsWithCounts.length === 0 ? (
             <p className="text-center text-gray-400 py-8">
-              No collections yet. Create one from an item's detail page.
+              No collections yet. Create one from an item&apos;s detail page.
             </p>
           ) : (
             collectionsWithCounts.map((collection) => (
@@ -34,7 +36,7 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
                 className="flex items-center justify-between border border-gray-700 rounded-lg p-4 bg-gray-800"
               >
                 <Link
-                  href={`/?collection=${collection.id}`}
+                  href={collection.isPublic ? `/share/${collection.id}` : `/?collection=${collection.id}`}
                   className="flex-1 hover:bg-gray-700 -m-4 p-4 rounded-lg"
                 >
                   <h2 className="text-xl font-semibold text-gray-100">{collection.name}</h2>
@@ -42,17 +44,29 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
                     {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
                   </p>
                 </Link>
-                {collection.itemCount === 0 && (
-                  <DeleteButton action={handleDeleteCollection} message="Are you sure you want to delete this collection?">
-                    <input type="hidden" name="collectionId" value={collection.id} />
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
-                  </DeleteButton>
-                )}
+                <div className="flex items-center gap-3 ml-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">
+                      {collection.isPublic ? "Public" : "Private"}
+                    </span>
+                    <CollectionPublicToggle
+                      collectionId={collection.id}
+                      isPublic={collection.isPublic}
+                    />
+                  </div>
+                  {collection.isPublic && <CopyShareLink collectionId={collection.id} />}
+                  {collection.itemCount === 0 && (
+                    <DeleteButton action={handleDeleteCollection} message="Are you sure you want to delete this collection?">
+                      <input type="hidden" name="collectionId" value={collection.id} />
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </DeleteButton>
+                  )}
+                </div>
               </div>
             ))
           )}
