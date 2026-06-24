@@ -18,10 +18,28 @@ export default async function AdminLayout({
             </Link>
             <nav className="flex gap-4">
               <Link
+                href="/admin/dashboard"
+                className="text-sm text-gray-400 hover:text-gray-100"
+              >
+                Dashboard
+              </Link>
+              <Link
                 href="/admin"
                 className="text-sm text-gray-400 hover:text-gray-100"
               >
                 Users
+              </Link>
+              <Link
+                href="/admin/collections"
+                className="text-sm text-gray-400 hover:text-gray-100"
+              >
+                Collections
+              </Link>
+              <Link
+                href="/admin/audit"
+                className="text-sm text-gray-400 hover:text-gray-100"
+              >
+                Audit
               </Link>
               <Link
                 href="/admin/trash"

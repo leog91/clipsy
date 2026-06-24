@@ -27,6 +27,7 @@ import { requireAdmin } from "@/lib/admin";
 import { isAdminEmail } from "@/lib/admin-emails";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { logAdminAction } from "./actions-admin-audit";
 
 const updateUserSchema = z.object({
   name: z.string().min(1),
@@ -215,6 +216,13 @@ export async function updateUser(
     })
     .where(eq(user.id, id));
 
+  await logAdminAction({
+    action: "user.update",
+    targetType: "user",
+    targetId: id,
+    details: `Updated user to name="${parsed.name}", email="${parsed.email}", role="${parsed.role}"`,
+  });
+
   revalidatePath("/admin");
 }
 
@@ -278,6 +286,13 @@ export async function softDeleteUser(id: string) {
     }
   });
 
+  await logAdminAction({
+    action: "user.soft_delete",
+    targetType: "user",
+    targetId: id,
+    details: targetUser ? `Soft-deleted user ${targetUser.email}` : undefined,
+  });
+
   revalidatePath("/admin");
   revalidatePath("/admin/trash");
 }
@@ -337,6 +352,13 @@ export async function restoreUser(id: string) {
     }
   });
 
+  await logAdminAction({
+    action: "user.restore",
+    targetType: "user",
+    targetId: id,
+    details: targetUser ? `Restored user ${targetUser.email}` : undefined,
+  });
+
   revalidatePath("/admin");
   revalidatePath("/admin/trash");
 }
@@ -349,6 +371,12 @@ export async function hardDeleteUser(id: string) {
   }
 
   const db = getDb();
+
+  const targetUser = await db
+    .select({ email: user.email })
+    .from(user)
+    .where(eq(user.id, id))
+    .get();
 
   await db.transaction(async (tx) => {
     const userItemIds = (
@@ -378,6 +406,13 @@ export async function hardDeleteUser(id: string) {
     await tx.delete(account).where(eq(account.userId, id));
 
     await tx.delete(user).where(eq(user.id, id));
+  });
+
+  await logAdminAction({
+    action: "user.hard_delete",
+    targetType: "user",
+    targetId: id,
+    details: targetUser ? `Permanently deleted user ${targetUser.email}` : undefined,
   });
 
   revalidatePath("/admin");

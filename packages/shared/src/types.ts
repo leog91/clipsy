@@ -52,6 +52,16 @@ export interface CreateItemResult {
   updated: boolean;
 }
 
+export interface AuditLog {
+  id: string;
+  adminId: string;
+  action: string;
+  targetType: string;
+  targetId: string;
+  details: string | null;
+  createdAt: Date;
+}
+
 export interface YouTubeMetadata {
   sourceId: string;
   title: string;

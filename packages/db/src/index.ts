@@ -10,6 +10,7 @@ export {
   asc,
   like,
   inArray,
+  gte,
   sql,
   isNull,
   isNotNull,
