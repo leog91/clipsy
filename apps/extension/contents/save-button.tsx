@@ -90,6 +90,8 @@ const SaveButton = () => {
 
       const webAppUrlBase = getWebAppUrl(devMode);
       const webAppUrl = `${webAppUrlBase}/?url=${encodeURIComponent(urlWithTimestamp)}`;
+
+      video?.pause();
       window.open(webAppUrl, "_blank");
 
       setSaved(true);
