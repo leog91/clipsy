@@ -8,16 +8,19 @@ export function AddItemForm() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setMessage("");
 
     try {
-      await createItemFromUrl(url);
+      const result = await createItemFromUrl(url);
       setUrl("");
+      setMessage(result.updated ? "Clip updated." : "Clip saved.");
       router.refresh();
     } catch (_err) {
       setError("Failed to add video. Please check the URL and try again.");
@@ -43,6 +46,7 @@ export function AddItemForm() {
       >
         {loading ? "Adding..." : "Add"}
       </button>
+      {message && <p className="text-green-600 text-sm">{message}</p>}
       {error && <p className="text-red-600 text-sm">{error}</p>}
     </form>
   );

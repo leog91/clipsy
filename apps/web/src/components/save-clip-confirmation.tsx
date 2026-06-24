@@ -1,4 +1,4 @@
-import { createItemFromUrl } from "@/lib/actions";
+import { createItemFromUrl, findExistingItemIdBySourceId } from "@/lib/actions";
 import { fetchYouTubeMetadata } from "@/lib/youtube";
 import { redirect } from "next/navigation";
 
@@ -8,16 +8,20 @@ interface SaveClipConfirmationProps {
 
 export async function SaveClipConfirmation({ url }: SaveClipConfirmationProps) {
   const metadata = await fetchYouTubeMetadata(url);
+  const existingId = metadata ? await findExistingItemIdBySourceId(metadata.sourceId) : null;
+  const isUpdate = Boolean(existingId);
 
   async function handleSaveClip() {
     "use server";
-    await createItemFromUrl(url);
-    redirect("/");
+    const result = await createItemFromUrl(url);
+    redirect(`/item/${result.id}`);
   }
 
   return (
     <div className="mb-8 p-6 bg-gray-800 border border-gray-700 rounded-lg">
-      <h2 className="text-xl font-semibold mb-4 text-gray-100">Save this clip?</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-100">
+        {isUpdate ? "Update this clip?" : "Save this clip?"}
+      </h2>
 
       <div className="flex gap-4 mb-6">
         {metadata?.thumbnail && (
@@ -35,6 +39,11 @@ export async function SaveClipConfirmation({ url }: SaveClipConfirmationProps) {
             <p className="text-sm text-gray-400 mt-1">{metadata.channel}</p>
           )}
           <p className="text-xs text-gray-500 mt-2 break-all">{url}</p>
+          {isUpdate && (
+            <p className="text-xs text-yellow-500 mt-2">
+              This clip is already saved. Updating will refresh its metadata and timestamp.
+            </p>
+          )}
         </div>
       </div>
 
@@ -44,7 +53,7 @@ export async function SaveClipConfirmation({ url }: SaveClipConfirmationProps) {
             type="submit"
             className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
           >
-            Save to Clipsy
+            {isUpdate ? "Update clip" : "Save to Clipsy"}
           </button>
         </form>
         <a

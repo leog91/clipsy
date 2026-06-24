@@ -47,6 +47,11 @@ export interface SearchResult {
   total: number;
 }
 
+export interface CreateItemResult {
+  id: string;
+  updated: boolean;
+}
+
 export interface YouTubeMetadata {
   sourceId: string;
   title: string;
