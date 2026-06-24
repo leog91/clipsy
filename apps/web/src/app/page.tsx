@@ -65,6 +65,12 @@ export default async function HomePage({
                 Admin Panel
               </Link>
             )}
+            <Link
+              href="/settings"
+              className="px-4 py-2 text-sm text-gray-400 hover:text-gray-100"
+            >
+              Settings
+            </Link>
             <form action={signOut}>
               <button
                 type="submit"

@@ -28,6 +28,7 @@ import { isAdminEmail } from "@/lib/admin-emails";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { logAdminAction } from "./actions-admin-audit";
+import { hashPassword } from "@better-auth/utils/password";
 
 const updateUserSchema = z.object({
   name: z.string().min(1),
@@ -417,4 +418,58 @@ export async function hardDeleteUser(id: string) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/trash");
+}
+
+const resetPasswordSchema = z.object({
+  newPassword: z.string().min(8),
+});
+
+export async function resetUserPassword(id: string, newPassword: string) {
+  await requireAdmin();
+
+  const parsed = resetPasswordSchema.parse({ newPassword });
+
+  const db = getDb();
+  const now = new Date();
+
+  const targetUser = await db.select().from(user).where(eq(user.id, id)).get();
+  if (!targetUser) {
+    throw new Error("User not found");
+  }
+
+  const hashedPassword = await hashPassword(parsed.newPassword);
+
+  const [existingCredentialAccount] = await db
+    .select()
+    .from(account)
+    .where(and(eq(account.userId, id), eq(account.providerId, "credential")))
+    .limit(1);
+
+  if (existingCredentialAccount) {
+    await db
+      .update(account)
+      .set({ password: hashedPassword, updatedAt: now })
+      .where(eq(account.id, existingCredentialAccount.id));
+  } else {
+    await db.insert(account).values({
+      id: crypto.randomUUID(),
+      userId: id,
+      accountId: id,
+      providerId: "credential",
+      password: hashedPassword,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  await db.update(user).set({ updatedAt: now }).where(eq(user.id, id));
+
+  await logAdminAction({
+    action: "user.reset_password",
+    targetType: "user",
+    targetId: id,
+    details: `Admin reset password for user ${targetUser.email}`,
+  });
+
+  revalidatePath("/admin");
 }

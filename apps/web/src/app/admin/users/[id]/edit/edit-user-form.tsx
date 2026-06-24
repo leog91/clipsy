@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUser } from "@/lib/actions-admin";
+import { updateUser, resetUserPassword } from "@/lib/actions-admin";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -18,6 +18,9 @@ export function EditUserForm({
   const router = useRouter();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [passwordPending, setPasswordPending] = useState(false);
 
   return (
     <div className="max-w-md">
@@ -112,6 +115,60 @@ export function EditUserForm({
           </Link>
         </div>
       </form>
+
+      <div className="mt-10 pt-8 border-t border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-100 mb-4">Reset password</h3>
+        <form
+          action={async (formData) => {
+            setPasswordPending(true);
+            setPasswordError("");
+            setPasswordMessage("");
+
+            try {
+              const password = String(formData.get("newPassword"));
+              await resetUserPassword(userData.id, password);
+              setPasswordMessage("Password reset successfully");
+            } catch (e) {
+              setPasswordError(e instanceof Error ? e.message : "Failed to reset password");
+            } finally {
+              setPasswordPending(false);
+            }
+          }}
+          className="space-y-4"
+        >
+          <div>
+            <label
+              htmlFor="newPassword"
+              className="block text-sm text-gray-400 mb-1"
+            >
+              New password
+            </label>
+            <input
+              id="newPassword"
+              name="newPassword"
+              type="password"
+              required
+              minLength={8}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          {passwordMessage && (
+            <p className="text-green-400 text-sm">{passwordMessage}</p>
+          )}
+          {passwordError && (
+            <p className="text-red-400 text-sm">{passwordError}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={passwordPending}
+            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+          >
+            {passwordPending ? "Resetting..." : "Reset password"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

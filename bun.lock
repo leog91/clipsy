@@ -29,6 +29,7 @@
       "name": "@clipsy/web",
       "version": "0.1.0",
       "dependencies": {
+        "@better-auth/utils": "^0.4.1",
         "@clipsy/db": "workspace:*",
         "@clipsy/shared": "workspace:*",
         "@libsql/client": "^0.14.0",
