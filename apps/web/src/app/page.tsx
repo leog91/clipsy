@@ -5,6 +5,7 @@ import { ItemCard } from "@/components/item-card";
 import { AddItemForm } from "@/components/add-item-form";
 import { SearchBar } from "@/components/search-bar";
 import { SaveClipConfirmation } from "@/components/save-clip-confirmation";
+import { SaveSubscriptionConfirmation } from "@/components/save-subscription-confirmation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -16,7 +17,7 @@ import { isAdminUser } from "@/lib/admin-emails";
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; tag?: string; collection?: string; url?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; tag?: string; collection?: string; url?: string; subscribe?: string }>;
 }): Promise<JSX.Element> {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -32,6 +33,7 @@ export default async function HomePage({
   const tagId = params.tag;
   const collectionId = params.collection;
   const urlParam = params.url;
+  const subscribeParam = params.subscribe;
 
   let items;
   let filterLabel = "";
@@ -107,6 +109,14 @@ export default async function HomePage({
           <div className="mb-6">
             <Suspense fallback={<div className="h-32 bg-gray-800 rounded-lg animate-pulse" />}>
               <SaveClipConfirmation url={urlParam} />
+            </Suspense>
+          </div>
+        )}
+
+        {subscribeParam && (
+          <div className="mb-6">
+            <Suspense fallback={<div className="h-32 bg-gray-800 rounded-lg animate-pulse" />}>
+              <SaveSubscriptionConfirmation channelUrl={subscribeParam} />
             </Suspense>
           </div>
         )}
