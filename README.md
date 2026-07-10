@@ -92,7 +92,7 @@ This starts both the web app and extension in development mode.
 ### 5. Build the extension
 
 ```bash
-bun --cwd apps/extension run build
+bun run --cwd apps/extension build
 ```
 
 Load the extension in Chrome:
@@ -182,8 +182,8 @@ bun run typecheck    # Type check all apps
 bun run db:generate  # Generate Drizzle migrations
 bun run db:push      # Push schema to database
 bun run db:migrate   # Run migrations
-bun --cwd apps/extension run dev    # Start extension development mode
-bun --cwd apps/extension run build  # Build the extension
+bun run --cwd apps/extension dev    # Start extension development mode
+bun run --cwd apps/extension build  # Build the extension
 ```
 
 ## License
