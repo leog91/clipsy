@@ -1,3 +1,5 @@
+import { get } from "node:https";
+
 export interface ChannelRssVideo {
   sourceId: string;
   title: string;
@@ -14,6 +16,45 @@ export interface ResolvedChannel {
 }
 
 const CHANNEL_ID_PATTERN = /UC[\w-]{22}/;
+const YOUTUBE_REQUEST_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  Accept: "application/rss+xml, application/xml, text/xml, text/html",
+};
+
+function getText(url: string, redirectsRemaining = 3): Promise<{ ok: boolean; status: number; text: string }> {
+  return new Promise((resolve, reject) => {
+    const request = get(url, { headers: YOUTUBE_REQUEST_HEADERS }, (response) => {
+      const status = response.statusCode ?? 0;
+      const location = response.headers.location;
+
+      if (status >= 300 && status < 400 && location && redirectsRemaining > 0) {
+        response.resume();
+        const redirectUrl = new URL(location, url).toString();
+        getText(redirectUrl, redirectsRemaining - 1).then(resolve, reject);
+        return;
+      }
+
+      const chunks: Buffer[] = [];
+
+      response.on("data", (chunk) => {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+      });
+
+      response.on("end", () => {
+        resolve({
+          ok: status >= 200 && status < 300,
+          status,
+          text: Buffer.concat(chunks).toString("utf8"),
+        });
+      });
+    }).on("error", reject);
+
+    request.setTimeout(10_000, () => {
+      request.destroy(new Error("YouTube request timed out"));
+    });
+  });
+}
 
 export function extractChannelIdFromUrl(url: string): string | null {
   try {
@@ -28,20 +69,14 @@ export function extractChannelIdFromUrl(url: string): string | null {
 
 export async function resolveChannelIdFromPage(url: string): Promise<string | null> {
   try {
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "text/html",
-      },
-    });
+    const response = await getText(url);
 
     if (!response.ok) {
       console.error("Failed to fetch channel page:", response.status);
       return null;
     }
 
-    const html = await response.text();
+    const html = response.text;
 
     // Try canonical link first (most reliable)
     const canonicalMatch = html.match(/<link[^>]*rel="canonical"[^>]*href="https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})"/i);
@@ -112,20 +147,14 @@ export async function fetchChannelRss(channelId: string): Promise<{
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
   try {
-    const response = await fetch(rssUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept: "application/rss+xml, application/xml, text/xml",
-      },
-    });
+    const response = await getText(rssUrl);
 
     if (!response.ok) {
       console.error("Failed to fetch channel RSS:", response.status);
       return { name: null, latestVideo: null };
     }
 
-    const xml = await response.text();
+    const xml = response.text;
     const name = parseChannelNameFromRss(xml);
 
     const entries = xml.match(/<entry[^>]*>[\s\S]*?<\/entry>/g) ?? [];
