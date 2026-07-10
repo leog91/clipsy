@@ -34,6 +34,7 @@ export function AddItemForm() {
       <input
         type="url"
         placeholder="Paste YouTube URL..."
+        aria-label="YouTube URL"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         required

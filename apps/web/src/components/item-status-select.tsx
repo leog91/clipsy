@@ -23,6 +23,7 @@ export function ItemStatusSelect({ itemId, status }: ItemStatusSelectProps) {
   return (
     <div className="relative">
       <select
+        aria-label="Item status"
         defaultValue={status}
         onChange={(e) => handleChange(e.target.value as "to_watch" | "watching")}
         disabled={isPending}

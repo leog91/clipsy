@@ -71,11 +71,13 @@ export default async function SubscriptionsPage(): Promise<JSX.Element> {
                 type="url"
                 name="url"
                 placeholder="Paste YouTube channel URL..."
+                aria-label="YouTube channel URL"
                 required
                 className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <select
                 name="categoryId"
+                aria-label="Subscription category"
                 className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">No category</option>
@@ -103,6 +105,7 @@ export default async function SubscriptionsPage(): Promise<JSX.Element> {
                 type="text"
                 name="name"
                 placeholder="e.g. Photography"
+                aria-label="New category name"
                 required
                 className="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

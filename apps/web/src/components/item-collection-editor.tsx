@@ -76,6 +76,7 @@ export function ItemCollectionEditor({ itemId, collections, availableCollections
 
       <div className="flex gap-2">
         <select
+          aria-label="Add existing collection"
           value={selectedCollectionId}
           onChange={(e) => setSelectedCollectionId(e.target.value)}
           disabled={isPending || unusedCollections.length === 0}
@@ -105,6 +106,7 @@ export function ItemCollectionEditor({ itemId, collections, availableCollections
           onChange={(e) => setNewCollectionName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleCreateAndAdd()}
           placeholder="New collection..."
+          aria-label="New collection name"
           disabled={isPending}
           className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
         />
@@ -114,7 +116,7 @@ export function ItemCollectionEditor({ itemId, collections, availableCollections
           disabled={isPending || !newCollectionName.trim()}
           className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
         >
-          Create
+          Create collection
         </button>
       </div>
     </div>

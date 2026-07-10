@@ -100,6 +100,7 @@ export function SubscriptionCard({ subscription, categories }: SubscriptionCardP
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <select
+              aria-label={`Category for ${channel.name}`}
               value={subscription.categoryId ?? ""}
               onChange={(e) => handleCategoryChange(e.target.value)}
               disabled={isPending}

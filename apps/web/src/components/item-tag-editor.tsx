@@ -70,6 +70,7 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
 
       <div className="flex gap-2">
         <select
+          aria-label="Add existing tag"
           value={selectedTagId}
           onChange={(e) => setSelectedTagId(e.target.value)}
           disabled={isPending || unusedTags.length === 0}
@@ -99,6 +100,7 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
           onChange={(e) => setNewTagName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleCreateAndAdd()}
           placeholder="New tag..."
+          aria-label="New tag name"
           disabled={isPending}
           className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
         />
@@ -108,7 +110,7 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
           disabled={isPending || !newTagName.trim()}
           className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
         >
-          Create
+          Create tag
         </button>
       </div>
     </div>
