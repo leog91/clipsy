@@ -5,6 +5,8 @@ node_modules/
 
 # testing
 coverage/
+.playwright-mcp/
+opencode.json
 
 # next.js
 .next/
@@ -52,3 +54,4 @@ apps/extension/.plasmo/
 # temp files
 *.tmp
 *.temp
+*.tsbuildinfo
