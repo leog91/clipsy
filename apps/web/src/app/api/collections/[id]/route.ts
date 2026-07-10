@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateCollectionVisibility } from "@/lib/actions-collections";
+import { apiErrorResponse } from "@/lib/api-errors";
 
 export async function PATCH(
   request: Request,
@@ -16,7 +17,7 @@ export async function PATCH(
 
     await updateCollectionVisibility(id, isPublic);
     return NextResponse.json({ success: true });
-  } catch (_error) {
-    return NextResponse.json({ error: "Failed to update collection" }, { status: 500 });
+  } catch (error) {
+    return apiErrorResponse(error, "Failed to update collection");
   }
 }

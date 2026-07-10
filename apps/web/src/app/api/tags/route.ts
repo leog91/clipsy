@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { listTags, createTag } from "@/lib/actions-tags";
+import { apiErrorResponse } from "@/lib/api-errors";
 
 export async function GET() {
   try {
     const tagsList = await listTags();
     return NextResponse.json(tagsList);
-  } catch (_error) {
-    return NextResponse.json({ error: "Failed to fetch tags" }, { status: 500 });
+  } catch (error) {
+    return apiErrorResponse(error, "Failed to fetch tags");
   }
 }
 
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
 
     const result = await createTag(name);
     return NextResponse.json(result, { status: 201 });
-  } catch (_error) {
-    return NextResponse.json({ error: "Failed to create tag" }, { status: 500 });
+  } catch (error) {
+    return apiErrorResponse(error, "Failed to create tag");
   }
 }

@@ -2,8 +2,19 @@ import { listTagsWithCounts, deleteTag } from "@/lib/actions-tags";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { DeleteButton } from "@/components/delete-button";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function TagsPage(): Promise<JSX.Element> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
   const tagsWithCounts = await listTagsWithCounts();
 
   async function handleDeleteTag(formData: FormData) {

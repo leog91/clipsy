@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchItems } from "@/lib/actions";
+import { apiErrorResponse } from "@/lib/api-errors";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const results = await searchItems(query);
     return NextResponse.json(results);
-  } catch (_error) {
-    return NextResponse.json({ error: "Search failed" }, { status: 500 });
+  } catch (error) {
+    return apiErrorResponse(error, "Search failed");
   }
 }

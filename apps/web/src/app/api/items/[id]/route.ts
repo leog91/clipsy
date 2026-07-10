@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getItemById, updateItem } from "@/lib/actions";
 import { updateItemSchema } from "@clipsy/shared";
+import { apiErrorResponse } from "@/lib/api-errors";
 
 export async function GET(
   request: NextRequest,
@@ -15,8 +16,8 @@ export async function GET(
     }
 
     return NextResponse.json(item);
-  } catch (_error) {
-    return NextResponse.json({ error: "Failed to fetch item" }, { status: 500 });
+  } catch (error) {
+    return apiErrorResponse(error, "Failed to fetch item");
   }
 }
 
@@ -31,7 +32,7 @@ export async function PUT(
 
     await updateItem(id, validated);
     return NextResponse.json({ success: true });
-  } catch (_error) {
-    return NextResponse.json({ error: "Failed to update item" }, { status: 500 });
+  } catch (error) {
+    return apiErrorResponse(error, "Failed to update item");
   }
 }

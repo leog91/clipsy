@@ -4,8 +4,19 @@ import { revalidatePath } from "next/cache";
 import { DeleteButton } from "@/components/delete-button";
 import { CollectionPublicToggle } from "@/components/collection-public-toggle";
 import { CopyShareLink } from "@/components/copy-share-link";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function CollectionsPage(): Promise<JSX.Element> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/sign-in");
+  }
+
   const collectionsWithCounts = await listCollectionsWithCounts();
 
   async function handleDeleteCollection(formData: FormData) {
