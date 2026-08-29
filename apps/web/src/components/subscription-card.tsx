@@ -35,23 +35,23 @@ export function SubscriptionCard({ subscription, categories }: SubscriptionCardP
   };
 
   return (
-    <div className={`bg-gray-800 border rounded-xl p-4 ${isPending ? "opacity-60" : "border-gray-700"}`}>
-      <div className="flex gap-4">
+    <div className={`rounded-xl border bg-gray-800 p-3 sm:p-4 ${isPending ? "opacity-60" : "border-gray-700"}`}>
+      <div className="flex gap-3 sm:gap-4">
         {channel.thumbnail && (
           <img
             src={channel.thumbnail}
             alt={channel.name}
-            className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+            className="h-16 w-16 flex-shrink-0 rounded-lg object-cover sm:h-24 sm:w-24"
           />
         )}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <div>
+          <div className="flex flex-col items-start gap-1 sm:flex-row sm:justify-between sm:gap-3">
+            <div className="min-w-0 max-w-full">
               <a
                 href={channel.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg font-semibold text-gray-100 hover:text-blue-400"
+                className="block truncate text-base font-semibold text-gray-100 hover:text-blue-400 sm:text-lg"
               >
                 {channel.name}
               </a>
@@ -66,7 +66,7 @@ export function SubscriptionCard({ subscription, categories }: SubscriptionCardP
                 <button
                   type="button"
                   disabled={isPending}
-                  className="text-xs text-gray-400 hover:text-red-400 disabled:opacity-50"
+                  className="shrink-0 text-xs text-gray-400 hover:text-red-400 disabled:opacity-50"
                 >
                   Unsubscribe
                 </button>
@@ -109,7 +109,7 @@ export function SubscriptionCard({ subscription, categories }: SubscriptionCardP
               value={subscription.categoryId ?? ""}
               onChange={(e) => handleCategoryChange(e.target.value)}
               disabled={isPending}
-              className="text-xs px-2 py-1 bg-gray-900 border border-gray-700 rounded text-gray-300 focus:outline-none disabled:opacity-50"
+              className="max-w-full min-w-0 rounded border border-gray-700 bg-gray-900 px-2 py-1 text-base text-gray-300 focus:outline-none disabled:opacity-50 sm:text-xs"
             >
               <option value="">No category</option>
               {categories.map((category) => (

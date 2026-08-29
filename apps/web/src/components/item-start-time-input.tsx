@@ -36,7 +36,7 @@ export function ItemStartTimeInput({ itemId, startAtSeconds }: ItemStartTimeInpu
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
           type="number"
           min={0}
@@ -48,12 +48,12 @@ export function ItemStartTimeInput({ itemId, startAtSeconds }: ItemStartTimeInpu
           disabled={isPending}
           placeholder="Seconds"
           aria-label="Start time in seconds"
-          className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-28 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 sm:text-sm"
         />
         <span className="text-sm text-gray-400">
           {savedValue !== null && savedValue >= 0 ? formatTimestamp(savedValue) : "From start"}
         </span>
-        {isPending && <span className="text-xs text-gray-500">Saving...</span>}
+        {isPending && <span className="basis-full text-xs text-gray-500 sm:basis-auto">Saving...</span>}
       </div>
       <p className="text-xs text-gray-500 mt-1">
         Press Enter or click outside to save. Saved clips under 10s get no timestamp.

@@ -54,29 +54,29 @@ export default async function HomePage({
   }
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 md:mb-8">
           <h1 className="text-3xl font-bold">Clipsy</h1>
-          <div className="flex items-center gap-4">
+          <div className="flex w-full items-center justify-between gap-1 sm:w-auto sm:justify-start sm:gap-4">
             {isAdminUser(session.user) && (
               <Link
                 href="/admin"
-                className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-gray-100 rounded-md transition-colors"
+                className="px-3 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-gray-100 rounded-md transition-colors sm:px-4"
               >
                 Admin Panel
               </Link>
             )}
             <Link
               href="/settings"
-              className="px-4 py-2 text-sm text-gray-400 hover:text-gray-100"
+              className="px-3 py-2 text-sm text-gray-400 hover:text-gray-100 sm:px-4"
             >
               Settings
             </Link>
             <form action={signOut}>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm text-gray-400 hover:text-gray-100"
+                  className="px-3 py-2 text-sm text-gray-400 hover:text-gray-100 sm:px-4"
               >
                 Sign Out
               </button>
@@ -84,23 +84,23 @@ export default async function HomePage({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mb-4 md:flex md:gap-4">
-          <Link href="/" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100 text-center">
+        <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 md:flex md:gap-4">
+          <Link href="/" className="rounded px-2 py-2 text-center text-sm text-gray-100 hover:bg-gray-700 sm:px-4 sm:text-base">
             All
           </Link>
-          <Link href="/?status=to_watch" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100 text-center">
+          <Link href="/?status=to_watch" className="rounded px-2 py-2 text-center text-sm text-gray-100 hover:bg-gray-700 sm:px-4 sm:text-base">
             To Watch
           </Link>
-          <Link href="/?status=watching" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100 text-center">
+          <Link href="/?status=watching" className="rounded px-2 py-2 text-center text-sm text-gray-100 hover:bg-gray-700 sm:px-4 sm:text-base">
             Watching
           </Link>
-          <Link href="/subscriptions" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100 text-center">
+          <Link href="/subscriptions" className="rounded px-2 py-2 text-center text-sm text-gray-100 hover:bg-gray-700 sm:px-4 sm:text-base">
             Subscriptions
           </Link>
-          <Link href="/collections" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100 text-center">
+          <Link href="/collections" className="rounded px-2 py-2 text-center text-sm text-gray-100 hover:bg-gray-700 sm:px-4 sm:text-base">
             Collections
           </Link>
-          <Link href="/tags" className="px-4 py-2 rounded hover:bg-gray-700 text-gray-100 text-center">
+          <Link href="/tags" className="rounded px-2 py-2 text-center text-sm text-gray-100 hover:bg-gray-700 sm:px-4 sm:text-base">
             Tags
           </Link>
         </div>
@@ -133,8 +133,8 @@ export default async function HomePage({
 
         {filterLabel && (
           <div className="mb-4 flex items-center gap-2">
-            <span className="text-gray-400">{filterLabel}</span>
-            <Link href="/" className="text-sm text-blue-400 hover:underline">
+            <span className="min-w-0 break-words text-gray-400">{filterLabel}</span>
+            <Link href="/" className="shrink-0 text-sm text-blue-400 hover:underline">
               Clear filter
             </Link>
           </div>

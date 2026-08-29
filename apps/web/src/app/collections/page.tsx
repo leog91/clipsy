@@ -26,7 +26,7 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
   }
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <Link href="/" className="text-blue-400 hover:underline mb-4 inline-block">
           ← Back
@@ -43,18 +43,18 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
             collectionsWithCounts.map((collection) => (
               <div
                 key={collection.id}
-                className="flex items-center justify-between border border-gray-700 rounded-lg p-4 bg-gray-800"
+                className="flex flex-col rounded-lg border border-gray-700 bg-gray-800 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4"
               >
                 <Link
                   href={collection.isPublic ? `/share/${collection.id}` : `/?collection=${collection.id}`}
-                  className="flex-1 hover:bg-gray-700 -m-4 p-4 rounded-lg"
+                  className="-m-2 w-full min-w-0 rounded-lg p-2 hover:bg-gray-700 sm:-m-4 sm:flex-1 sm:p-4"
                 >
-                  <h2 className="text-xl font-semibold text-gray-100">{collection.name}</h2>
+                  <h2 className="break-words text-lg font-semibold text-gray-100 sm:text-xl">{collection.name}</h2>
                   <p className="text-gray-400">
                     {collection.itemCount} {collection.itemCount === 1 ? "item" : "items"}
                   </p>
                 </Link>
-                <div className="flex items-center gap-3 ml-4">
+                <div className="mt-3 ml-0 flex w-full flex-wrap items-center gap-2 sm:mt-0 sm:ml-4 sm:w-auto sm:gap-3">
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-400">
                       {collection.isPublic ? "Public" : "Private"}

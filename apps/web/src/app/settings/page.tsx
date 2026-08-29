@@ -79,7 +79,7 @@ export default function SettingsPage() {
 
   if (sessionLoading) {
     return (
-      <div className="min-h-screen p-8">
+      <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-2xl mx-auto">
           <p className="text-gray-400">Loading...</p>
         </div>
@@ -89,7 +89,7 @@ export default function SettingsPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen p-8">
+      <div className="min-h-screen p-4 md:p-8">
         <div className="max-w-2xl mx-auto">
           <p className="text-gray-400">Please sign in to view settings.</p>
         </div>
@@ -101,7 +101,7 @@ export default function SettingsPage() {
   const hasPasswordAccount = true;
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
         <Link href="/" className="text-blue-400 hover:underline mb-4 inline-block">
           ← Back
@@ -110,25 +110,25 @@ export default function SettingsPage() {
         <h1 className="text-3xl font-bold text-gray-100 mb-6">Settings</h1>
 
         <div className="space-y-6">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <div className="rounded-lg border border-gray-700 bg-gray-800 p-4 sm:p-6">
             <h2 className="text-lg font-semibold text-gray-100 mb-4">Account</h2>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
+              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
                 <span className="text-gray-400">Name</span>
-                <span className="text-gray-100">{user.name}</span>
+                <span className="min-w-0 break-words text-gray-100 sm:text-right">{user.name}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
                 <span className="text-gray-400">Email</span>
-                <span className="text-gray-100">{user.email}</span>
+                <span className="min-w-0 break-all text-gray-100 sm:text-right">{user.email}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
                 <span className="text-gray-400">Role</span>
-                <span className="text-gray-100 capitalize">{user.role}</span>
+                <span className="min-w-0 break-words text-gray-100 capitalize sm:text-right">{user.role}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <div className="rounded-lg border border-gray-700 bg-gray-800 p-4 sm:p-6">
             <h2 className="text-lg font-semibold text-gray-100 mb-4">Linked providers</h2>
             {accountsLoading ? (
               <p className="text-gray-400 text-sm">Loading...</p>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
           </div>
 
           {hasPasswordAccount && (
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+            <div className="rounded-lg border border-gray-700 bg-gray-800 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-gray-100 mb-4">Change password</h2>
               <form onSubmit={handleChangePassword} className="space-y-4">
                 <input

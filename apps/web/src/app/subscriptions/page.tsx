@@ -46,16 +46,16 @@ export default async function SubscriptionsPage(): Promise<JSX.Element> {
   const hasNewCount = subscriptions.filter((s) => s.hasNew).length;
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
         <Link href="/" className="text-blue-400 hover:underline mb-4 inline-block">
           ← Back
         </Link>
 
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-100">Subscriptions</h1>
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold text-gray-100 md:text-3xl">Subscriptions</h1>
           {hasNewCount > 0 && (
-            <span className="px-3 py-1 bg-green-900 text-green-200 rounded-full text-sm font-medium">
+            <span className="shrink-0 rounded-full bg-green-900 px-3 py-1 text-sm font-medium text-green-200">
               {hasNewCount} new
             </span>
           )}
@@ -73,12 +73,12 @@ export default async function SubscriptionsPage(): Promise<JSX.Element> {
                 placeholder="Paste YouTube channel URL..."
                 aria-label="YouTube channel URL"
                 required
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-700 bg-gray-900 px-4 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
               />
               <select
                 name="categoryId"
                 aria-label="Subscription category"
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-700 bg-gray-900 px-4 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
               >
                 <option value="">No category</option>
                 {categories.map((category) => (
@@ -107,7 +107,7 @@ export default async function SubscriptionsPage(): Promise<JSX.Element> {
                 placeholder="e.g. Photography"
                 aria-label="New category name"
                 required
-                className="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="min-w-0 flex-1 rounded-lg border border-gray-700 bg-gray-900 px-4 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
               />
               <button
                 type="submit"
@@ -141,13 +141,14 @@ export default async function SubscriptionsPage(): Promise<JSX.Element> {
           </div>
         </div>
 
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm text-gray-400">
+        <div className="mb-6 flex items-center justify-between gap-2">
+          <p className="min-w-0 text-sm text-gray-400">
             {refreshedCount > 0
               ? `Refreshed ${refreshedCount} channel${refreshedCount === 1 ? "" : "s"}`
               : "Channels checked recently"}
           </p>
           <form
+            className="shrink-0"
             action={async () => {
               "use server";
               await checkForNewVideos();

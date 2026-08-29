@@ -45,7 +45,7 @@ export default async function SharePage({ params }: SharePageProps) {
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-100">{collection.name}</h1>
+          <h1 className="break-words text-2xl font-bold text-gray-100 md:text-3xl">{collection.name}</h1>
           <p className="text-gray-400 mt-2">
             {collection.items.length} {collection.items.length === 1 ? "clip" : "clips"}
           </p>
@@ -73,24 +73,24 @@ export default async function SharePage({ params }: SharePageProps) {
                   href={youtubeUrl.toString()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block border border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow bg-gray-800"
+                  className="block rounded-lg border border-gray-700 bg-gray-800 p-3 transition-shadow hover:shadow-md sm:p-4"
                 >
-                  <div className="flex gap-4">
+                  <div className="flex gap-3 sm:gap-4">
                     {item.thumbnail && (
                       <img
                         src={item.thumbnail}
                         alt={item.title}
-                        className="w-40 h-24 object-cover rounded flex-shrink-0"
+                        className="h-16 w-24 flex-shrink-0 rounded object-cover sm:h-24 sm:w-40"
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg mb-1 text-gray-100 truncate">
+                      <h3 className="mb-1 truncate text-sm font-semibold text-gray-100 sm:text-lg">
                         {item.title}
                       </h3>
                       {item.channel && (
-                        <p className="text-sm text-gray-400 mb-2">{item.channel}</p>
+                        <p className="mb-2 truncate text-xs text-gray-400 sm:text-sm">{item.channel}</p>
                       )}
-                      <div className="flex gap-2 flex-wrap">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {item.duration !== null && item.duration > 0 && (
                           <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300">
                             {formatTimestamp(item.duration)}
@@ -106,7 +106,7 @@ export default async function SharePage({ params }: SharePageProps) {
                   </div>
 
                   {item.tags.length > 0 && (
-                    <div className="mt-3 flex gap-2 flex-wrap">
+                    <div className="mt-2 flex flex-wrap gap-1.5 sm:mt-3 sm:gap-2">
                       {item.tags.map((tag) => (
                         <span
                           key={tag.id}

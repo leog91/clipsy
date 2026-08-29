@@ -27,7 +27,7 @@ export function ItemStatusSelect({ itemId, status }: ItemStatusSelectProps) {
         defaultValue={status}
         onChange={(e) => handleChange(e.target.value as "to_watch" | "watching")}
         disabled={isPending}
-        className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 sm:text-sm"
       >
         <option value="to_watch">To Watch</option>
         <option value="watching">Watching</option>

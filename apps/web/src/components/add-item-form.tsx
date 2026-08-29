@@ -30,7 +30,7 @@ export function AddItemForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-wrap gap-2">
       <input
         type="url"
         placeholder="Paste YouTube URL..."
@@ -38,7 +38,7 @@ export function AddItemForm() {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         required
-        className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="min-w-0 flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <button
         type="submit"
@@ -47,8 +47,8 @@ export function AddItemForm() {
       >
         {loading ? "Adding..." : "Add"}
       </button>
-      {message && <p className="text-green-600 text-sm">{message}</p>}
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {message && <p className="basis-full text-sm text-green-500">{message}</p>}
+      {error && <p className="basis-full text-sm text-red-500">{error}</p>}
     </form>
   );
 }

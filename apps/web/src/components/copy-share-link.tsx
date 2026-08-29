@@ -26,7 +26,7 @@ export function CopyShareLink({ collectionId }: CopyShareLinkProps) {
       <button
         type="button"
         onClick={handleCopy}
-        className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-lg transition-colors"
+        className="whitespace-nowrap rounded-lg bg-gray-700 px-3 py-1.5 text-sm text-gray-200 transition-colors hover:bg-gray-600"
       >
         Copy share link
       </button>
@@ -34,7 +34,7 @@ export function CopyShareLink({ collectionId }: CopyShareLinkProps) {
       <AlertDialog.Root open={Boolean(fallbackUrl)} onOpenChange={(open) => !open && setFallbackUrl("")}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
-          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gray-700 bg-gray-900 p-6 shadow-2xl focus:outline-none">
+          <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-gray-700 bg-gray-900 p-4 shadow-2xl focus:outline-none sm:p-6">
             <AlertDialog.Title className="text-lg font-semibold text-gray-100">
               Copy share link
             </AlertDialog.Title>
@@ -52,7 +52,7 @@ export function CopyShareLink({ collectionId }: CopyShareLinkProps) {
               <AlertDialog.Action asChild>
                 <button
                   type="button"
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto"
                 >
                   Close
                 </button>

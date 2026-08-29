@@ -84,7 +84,7 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
               </div>
 
               {item.description && (
-                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+                <p className="break-words text-sm leading-relaxed text-gray-300 whitespace-pre-line">
                   {item.description}
                 </p>
               )}

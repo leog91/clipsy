@@ -51,7 +51,7 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
         {tags.map((tag) => (
           <span
             key={tag.id}
-            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded bg-gray-700 text-gray-200"
+            className="inline-flex max-w-full items-center gap-1 rounded bg-gray-700 px-2 py-1 text-xs text-gray-200"
           >
             {tag.name}
             <button
@@ -74,7 +74,7 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
           value={selectedTagId}
           onChange={(e) => setSelectedTagId(e.target.value)}
           disabled={isPending || unusedTags.length === 0}
-          className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="min-w-0 flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 sm:text-sm"
         >
           <option value="">Add existing tag...</option>
           {unusedTags.map((tag) => (
@@ -93,7 +93,7 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
         </button>
       </div>
 
-      <div className="flex gap-2 mt-2">
+      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
         <input
           type="text"
           value={newTagName}
@@ -102,13 +102,13 @@ export function ItemTagEditor({ itemId, tags, availableTags }: ItemTagEditorProp
           placeholder="New tag..."
           aria-label="New tag name"
           disabled={isPending}
-          className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="min-w-0 flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-base text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 sm:text-sm"
         />
         <button
           type="button"
           onClick={handleCreateAndAdd}
           disabled={isPending || !newTagName.trim()}
-          className="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
+          className="w-full rounded-lg bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700 disabled:opacity-50 sm:w-auto"
         >
           Create tag
         </button>
