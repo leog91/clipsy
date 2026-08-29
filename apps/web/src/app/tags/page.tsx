@@ -17,9 +17,8 @@ export default async function TagsPage(): Promise<JSX.Element> {
 
   const tagsWithCounts = await listTagsWithCounts();
 
-  async function handleDeleteTag(formData: FormData) {
+  async function handleDeleteTag(tagId: string) {
     "use server";
-    const tagId = formData.get("tagId") as string;
     await deleteTag(tagId);
     revalidatePath("/tags");
   }
@@ -54,10 +53,15 @@ export default async function TagsPage(): Promise<JSX.Element> {
                   </p>
                 </Link>
                 {tag.itemCount === 0 && (
-                  <DeleteButton action={handleDeleteTag} message="Are you sure you want to delete this tag?">
-                    <input type="hidden" name="tagId" value={tag.id} />
+                  <DeleteButton
+                    action={handleDeleteTag.bind(null, tag.id)}
+                    title="Delete tag?"
+                    description={`This will permanently delete “${tag.name}”.`}
+                    successMessage="Tag deleted"
+                    errorMessage="Failed to delete tag"
+                  >
                     <button
-                      type="submit"
+                      type="button"
                       className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                     >
                       Delete

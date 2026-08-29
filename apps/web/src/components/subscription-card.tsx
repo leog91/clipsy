@@ -8,6 +8,7 @@ import {
   unsubscribe,
   updateSubscriptionCategory,
 } from "@/lib/actions-subscriptions";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 interface SubscriptionCardProps {
   subscription: SubscriptionWithChannel;
@@ -29,14 +30,6 @@ export function SubscriptionCard({ subscription, categories }: SubscriptionCardP
   const handleMarkSeen = () => {
     startTransition(async () => {
       await markSubscriptionSeen(subscription.id);
-      router.refresh();
-    });
-  };
-
-  const handleUnsubscribe = () => {
-    if (!confirm("Are you sure you want to unsubscribe?")) return;
-    startTransition(async () => {
-      await unsubscribe(subscription.id);
       router.refresh();
     });
   };
@@ -68,13 +61,25 @@ export function SubscriptionCard({ subscription, categories }: SubscriptionCardP
                 </span>
               )}
             </div>
-            <button
-              onClick={handleUnsubscribe}
-              disabled={isPending}
-              className="text-xs text-gray-400 hover:text-red-400 disabled:opacity-50"
-            >
-              Unsubscribe
-            </button>
+            <ConfirmDialog
+              trigger={
+                <button
+                  type="button"
+                  disabled={isPending}
+                  className="text-xs text-gray-400 hover:text-red-400 disabled:opacity-50"
+                >
+                  Unsubscribe
+                </button>
+              }
+              title="Unsubscribe?"
+              description={`You will stop receiving updates from ${channel.name}.`}
+              action={() => unsubscribe(subscription.id)}
+              confirmLabel="Unsubscribe"
+              pendingLabel="Unsubscribing..."
+              successMessage="Unsubscribed"
+              errorMessage="Failed to unsubscribe"
+              onSuccess={() => router.refresh()}
+            />
           </div>
 
           {channel.lastVideoTitle ? (

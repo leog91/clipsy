@@ -1,7 +1,7 @@
 import { getItemById, deleteItem } from "@/lib/actions";
 import { listTags } from "@/lib/actions-tags";
 import { listCollections } from "@/lib/actions-collections";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DeleteButton } from "@/components/delete-button";
 import { formatTimestamp } from "@/lib/youtube";
@@ -28,7 +28,6 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   async function handleDeleteItem() {
     "use server";
     await deleteItem(id);
-    redirect("/");
   }
 
   const youtubeUrl = (() => {
@@ -157,10 +156,14 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
               </h2>
               <DeleteButton
                 action={handleDeleteItem}
-                message="Are you sure you want to delete this item?"
+                title="Delete clip?"
+                description={`This will permanently delete “${item.title}”.`}
+                successMessage="Clip deleted"
+                errorMessage="Failed to delete clip"
+                redirectTo="/"
               >
                 <button
-                  type="submit"
+                  type="button"
                   className="w-full px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
                 >
                   Delete clip

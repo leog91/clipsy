@@ -19,9 +19,8 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
 
   const collectionsWithCounts = await listCollectionsWithCounts();
 
-  async function handleDeleteCollection(formData: FormData) {
+  async function handleDeleteCollection(collectionId: string) {
     "use server";
-    const collectionId = formData.get("collectionId") as string;
     await deleteCollection(collectionId);
     revalidatePath("/collections");
   }
@@ -67,10 +66,15 @@ export default async function CollectionsPage(): Promise<JSX.Element> {
                   </div>
                   {collection.isPublic && <CopyShareLink collectionId={collection.id} />}
                   {collection.itemCount === 0 && (
-                    <DeleteButton action={handleDeleteCollection} message="Are you sure you want to delete this collection?">
-                      <input type="hidden" name="collectionId" value={collection.id} />
+                    <DeleteButton
+                      action={handleDeleteCollection.bind(null, collection.id)}
+                      title="Delete collection?"
+                      description={`This will permanently delete “${collection.name}”.`}
+                      successMessage="Collection deleted"
+                      errorMessage="Failed to delete collection"
+                    >
                       <button
-                        type="submit"
+                        type="button"
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                       >
                         Delete

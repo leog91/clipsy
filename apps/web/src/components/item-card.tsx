@@ -5,6 +5,7 @@ import Link from "next/link";
 import { deleteItem } from "@/lib/actions";
 import { formatTimestamp } from "@/lib/youtube";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 interface ItemCardProps {
   item: ItemWithRelations;
@@ -12,16 +13,6 @@ interface ItemCardProps {
 
 export function ItemCard({ item }: ItemCardProps) {
   const router = useRouter();
-
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (confirm("Are you sure you want to delete this item?")) {
-      await deleteItem(item.id);
-      router.refresh();
-    }
-  };
 
   return (
     <div className="border border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow bg-gray-800">
@@ -59,12 +50,22 @@ export function ItemCard({ item }: ItemCardProps) {
             </div>
           </div>
         </Link>
-        <button
-          onClick={handleDelete}
-          className="self-start px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 flex-shrink-0"
-        >
-          Delete
-        </button>
+        <ConfirmDialog
+          trigger={
+            <button
+              type="button"
+              className="self-start px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 flex-shrink-0"
+            >
+              Delete
+            </button>
+          }
+          title="Delete clip?"
+          description={`This will permanently delete “${item.title}”.`}
+          action={() => deleteItem(item.id)}
+          successMessage="Clip deleted"
+          errorMessage="Failed to delete clip"
+          onSuccess={() => router.refresh()}
+        />
       </div>
 
       {item.tags.length > 0 && (

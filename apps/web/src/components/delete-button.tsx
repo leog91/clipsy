@@ -1,26 +1,37 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { type ReactElement } from "react";
+import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export function DeleteButton({
   action,
   children,
-  message,
+  title,
+  description,
+  successMessage,
+  errorMessage,
+  redirectTo,
 }: {
-  action: (formData: FormData) => Promise<void>;
-  children: ReactNode;
-  message: string;
+  action: () => Promise<void>;
+  children: ReactElement;
+  title: string;
+  description: string;
+  successMessage: string;
+  errorMessage: string;
+  redirectTo?: string;
 }) {
+  const router = useRouter();
+
   return (
-    <form
+    <ConfirmDialog
+      trigger={children}
+      title={title}
+      description={description}
       action={action}
-      onSubmit={(e) => {
-        if (!confirm(message)) {
-          e.preventDefault();
-        }
-      }}
-    >
-      {children}
-    </form>
+      successMessage={successMessage}
+      errorMessage={errorMessage}
+      onSuccess={() => (redirectTo ? router.push(redirectTo) : router.refresh())}
+    />
   );
 }
