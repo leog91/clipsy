@@ -6,7 +6,9 @@ import { IntegrationSignIn } from "@/components/integration-sign-in";
 
 export const metadata: Metadata = {
   title: "Connect Shelfy · Clipsy",
-  referrer: "no-referrer",
+  // Preserve Origin on same-origin consent POSTs; no-referrer makes it "null".
+  // Cross-origin navigation still receives no referrer details.
+  referrer: "same-origin",
   robots: { index: false, follow: false },
 };
 
