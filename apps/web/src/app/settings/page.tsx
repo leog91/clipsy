@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession, changePassword, authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { ShelfyConnections } from "@/components/shelfy-connections";
 
 interface LinkedAccount {
   providerId: string;
@@ -108,6 +109,7 @@ export default function SettingsPage() {
         </Link>
 
         <h1 className="text-3xl font-bold text-gray-100 mb-6">Settings</h1>
+        <ShelfyConnections />
 
         <div className="space-y-6">
           <div className="rounded-lg border border-gray-700 bg-gray-800 p-4 sm:p-6">

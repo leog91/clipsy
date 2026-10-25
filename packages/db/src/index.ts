@@ -11,6 +11,7 @@ export {
   like,
   inArray,
   gte,
+  gt,
   sql,
   isNull,
   isNotNull,

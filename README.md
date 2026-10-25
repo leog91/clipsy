@@ -158,6 +158,20 @@ Admins are users with `role = admin` or emails listed in `ADMIN_EMAILS`. Admins 
 
 ## API Endpoints
 
+### Optional Shelfy summary
+
+Users connect from **Shelfy Account → Connect Clipsy**, sign in here if needed, review the account/app shown on the approval page, and allow read-only counts access. No per-user environment variables, account-ID copying or manual tokens. Each Shelfy account has its own connection. **Settings → Shelfy connections** lists grants and offers Disconnect; revocation never deletes videos. Shelfy also offers Disconnect. Access expires after 90 days and can be renewed by disconnecting/reconnecting.
+
+The operator sets only `SHELFY_URL` to the trusted Shelfy origin in the root `.env` or hosting environment. It must match Shelfy's `BETTER_AUTH_URL`; Shelfy's `CLIPSY_URL` defaults to this hosted app. HTTPS is required in production; HTTP loopback is permitted only in development. Only the exact registered `/api/clipsy/callback` is accepted, never an arbitrary return URL. Remove the superseded `SHELFY_SUMMARY_USER_ID`/`SHELFY_SUMMARY_TOKEN_SHA256` settings; they no longer authorize access.
+
+Review the new additive migrations in `packages/db/drizzle-integrations/` before intentionally running `bun run --cwd packages/db db:migrate:integrations` against an already-initialized Clipsy database. These migrations are tracked separately because the existing core migration directory is local/ignored; they create only integration tables and do not baseline/reset core data. Generate future integration changes with `bun run --cwd packages/db db:generate:integrations`. Shelfy's own connection migrations must also be applied intentionally. No remote migration/deployment is automatic.
+
+`GET /api/integrations/summary` returns only active-account counts: `videos`, `toWatch`, `watching`, `collections` and `subscriptions`. Deleted records/accounts are excluded. A dedicated bearer token authorizes only summary reads and its own revocation, not item mutation or login. Authorization uses explicit consent, PKCE S256, exact redirect validation and hashed single-use codes with a five-minute expiry. Tokens are random, stored only as hashes here, scoped to the consenting account, and expire after 90 days. Shelfy encrypts credentials server-side; neither app shares auth secrets, databases or login cookies. Token/consent bodies are limited to 8 KiB; responses are private/no-store and redirects suppress referrers.
+
+Isolated SQLite protocol/summary tests: `bun test packages/db/src/shelfy-grants.test.ts packages/db/src/summary.test.ts` (never uses the configured database).
+
+### Existing endpoints
+
 - `POST /api/items` - Create item from URL
 - `GET /api/items` - List all items
 - `GET /api/items/[id]` - Get item by ID

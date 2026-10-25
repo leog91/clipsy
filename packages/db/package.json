@@ -19,6 +19,8 @@
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
+    "db:generate:integrations": "drizzle-kit generate --config=drizzle-integrations.config.ts",
+    "db:migrate:integrations": "drizzle-kit migrate --config=drizzle-integrations.config.ts",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "typecheck": "tsc --noEmit"
